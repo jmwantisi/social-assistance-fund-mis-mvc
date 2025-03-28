@@ -1,0 +1,51 @@
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+appsettings.*.json
+
+# Visual Studio Code files
+.vscode/
+
+# Dependencies
+packages/
+*.nupkg
+*.snupkg
+
+# Configuration
+Properties/launchSettings.json
+
+# Coverage and test results
+TestResults/
+*.coverage
+*.coveragexml
+*.trx
+
+# Rider and JetBrains
+.idea/
+*.iml
+
+# Backup and temporary files
+*.bak
+*.tmp
+*.cache
+
+# Visual Studio files
+.vs/
+
+# Ignore Auto Generate Migration snapshots
+*.Designer.cs
+
+
