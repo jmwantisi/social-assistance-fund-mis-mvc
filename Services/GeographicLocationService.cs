@@ -1,0 +1,122 @@
+﻿using socialAssistanceFundMIS.Data;
+using socialAssistanceFundMIS.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace socialAssistanceFundMIS.Services
+{
+    public class GeographicLocationService
+    {
+        private readonly ApplicationDbContext _context;
+
+        public GeographicLocationService(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<List<GeographicLocation>> GetVillagesWithHierarchyAsync()
+        {
+            var villages = await _context.GeographicLocations
+                .Where(gl => gl.GeographicLocationType.Name == "Village")
+                .Include(gl => gl.GeographicLocationParent) // Sub-Location
+                    .ThenInclude(subLoc => subLoc.GeographicLocationParent) // Location
+                        .ThenInclude(loc => loc.GeographicLocationParent) // Sub-County
+                            .ThenInclude(subCounty => subCounty.GeographicLocationParent) // County
+                .AsNoTracking() // Prevents EF from tracking changes
+                .ToListAsync();
+
+            // ParentLocations are coming out blank
+            var data = villages.Select(village => new GeographicLocation
+            {
+                Id = village.Id,
+                Name = string.Join(", ", new[] { village.Name, village.GeographicLocationParent?.Name,
+                                         village.GeographicLocationParent?.GeographicLocationParent?.Name,
+                                         village.GeographicLocationParent?.GeographicLocationParent?.GeographicLocationParent?.Name,
+                                         village.GeographicLocationParent?.GeographicLocationParent?.GeographicLocationParent?.GeographicLocationParent?.Name }
+                                    .Where(name => !string.IsNullOrEmpty(name))),
+                GeographicLocationTypeId = village.GeographicLocationTypeId,
+                GeographicLocationParentId = village.GeographicLocationParentId,
+                CreatedAt = village.CreatedAt,
+                UpdatedAt = village.UpdatedAt,
+                Removed = village.Removed
+            }).ToList();
+
+            return data;
+        }
+
+
+        public async Task<GeographicLocation> CreateGeographicLocationAsync(GeographicLocation location)
+        {
+            if (location == null) throw new ArgumentNullException(nameof(location));
+
+            _context.GeographicLocations.Add(location);
+            await _context.SaveChangesAsync();
+
+            return location;
+        }
+
+        public async Task<GeographicLocation?> GetGeographicLocationByIdAsync(int id)
+        {
+            return await _context.GeographicLocations
+                .AsNoTracking()
+                .Include(gl => gl.GeographicLocationParent)
+                .ThenInclude(subLoc => subLoc.GeographicLocationParent)
+                .ThenInclude(loc => loc.GeographicLocationParent)
+                .ThenInclude(subCounty => subCounty.GeographicLocationParent)
+                .FirstOrDefaultAsync(gl => gl.Id == id && !gl.Removed);
+        }
+
+        public async Task<List<GeographicLocation>> GetAllGeographicLocationsAsync()
+        {
+            return await _context.GeographicLocations
+                .AsNoTracking()
+                .Where(gl => !gl.Removed)
+                .Include(gl => gl.GeographicLocationParent)
+                .ThenInclude(subLoc => subLoc.GeographicLocationParent)
+                .ThenInclude(loc => loc.GeographicLocationParent)
+                .ThenInclude(subCounty => subCounty.GeographicLocationParent)
+                .ToListAsync();
+        }
+
+        public async Task<GeographicLocation> UpdateGeographicLocationAsync(int id, GeographicLocation location)
+        {
+            if (location == null) throw new ArgumentNullException(nameof(location));
+
+            var entity = await _context.GeographicLocations.FindAsync(id);
+            if (entity == null) throw new KeyNotFoundException("Geographic Location not found.");
+
+            entity.Name = location.Name;
+            entity.GeographicLocationTypeId = location.GeographicLocationTypeId;
+            entity.GeographicLocationParentId = location.GeographicLocationParentId;
+            entity.UpdatedAt = DateTime.UtcNow;
+
+            _context.GeographicLocations.Update(entity);
+            await _context.SaveChangesAsync();
+
+            return entity;
+        }
+
+        public async Task DeleteGeographicLocationAsync(int id)
+        {
+            var entity = await _context.GeographicLocations.FindAsync(id);
+            if (entity == null) throw new KeyNotFoundException("Geographic Location not found.");
+
+            entity.Removed = true;
+            entity.UpdatedAt = DateTime.UtcNow;
+
+            _context.GeographicLocations.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task PermanentlyDeleteGeographicLocationAsync(int id)
+        {
+            var entity = await _context.GeographicLocations.FindAsync(id);
+            if (entity == null) throw new KeyNotFoundException("Geographic Location not found.");
+
+            _context.GeographicLocations.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+    }
+}
