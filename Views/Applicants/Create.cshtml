@@ -1,0 +1,76 @@
+﻿@model SocialAssistanceFundMisMcv.ViewModels.ApplicantViewModel
+
+<h2>Create Applicant</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="FirstName" class="form-label">First Name</label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MiddleName" class="form-label">Middle Name</label>
+        <input asp-for="MiddleName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LastName" class="form-label">Last Name</label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SexId" class="form-label">Sex</label>
+        <select asp-for="SexId" asp-items="@(new SelectList(Model.Sexes, "Id", "Name"))" class="form-control">
+            <option value="">-- Select Sex --</option>
+        </select>
+        <span asp-validation-for="SexId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Dob" class="form-label">Date of Birth</label>
+        <input asp-for="Dob" type="date" class="form-control" />
+        <span asp-validation-for="Dob" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MaritalStatusId" class="form-label">Marital Status</label>
+        <select asp-for="MaritalStatusId" asp-items="@(new SelectList(Model.MaritalStatuses, "Id", "Name"))" class="form-control">
+            <option value="">-- Select Marital Status --</option>
+        </select>
+        <span asp-validation-for="MaritalStatusId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CountyId" class="form-label">Geographical Location</label>
+        <div class="col-md-12">
+            <label asp-for="CountyId" class="form-label">County</label>
+            <select asp-for="CountyId" asp-items="@(new SelectList(Model.Counties, "Id", "Name"))" class="form-control">
+                <option value="">-- Select County --</option>
+            </select>
+            <span asp-validation-for="CountyId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IdentityCardNumber" class="form-label">Identity Card Number</label>
+        <input asp-for="IdentityCardNumber" class="form-control" />
+        <span asp-validation-for="IdentityCardNumber" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PhysicalAddress" class="form-label">Physical Address</label>
+        <input asp-for="PhysicalAddress" class="form-control" />
+        <span asp-validation-for="PhysicalAddress" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
