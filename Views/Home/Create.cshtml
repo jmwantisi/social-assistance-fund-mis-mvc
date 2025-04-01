@@ -1,0 +1,41 @@
+﻿@model SocialAssistanceFundMisMcv.ViewModels.ApplicationViewModel
+
+@{
+    ViewData["Title"] = "Create Application";
+}
+
+<div class="container mt-4">
+    <h2>Create Application</h2>
+
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="SelectedProgramId" class="control-label"></label>
+            <select asp-for="SelectedProgramId" class="form-control"
+                    asp-items="@(new SelectList(Model.Programs, "Id", "Name"))">
+                <option value="">-- Select Program --</option>
+            </select>
+            <span asp-validation-for="SelectedProgramId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="SelectedSexId" class="control-label"></label>
+            <select asp-for="SelectedSexId" class="form-control"
+                    asp-items="@(new SelectList(Model.Sexes, "Id", "Name"))">
+                <option value="">-- Select Sex --</option>
+            </select>
+            <span asp-validation-for="SelectedSexId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="SelectedMaritalStatusId" class="control-label"></label>
+            <select asp-for="SelectedMaritalStatusId" class="form-control"
+                    asp-items="@(new SelectList(Model.MaritalStatuses, "Id", "Name"))">
+                <option value="">-- Select Marital Status --</option>
+            </select>
+            <span asp-validation-for="SelectedMaritalStatusId" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+    </form>
+</div>
