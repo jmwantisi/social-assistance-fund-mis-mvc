@@ -1,8 +1,44 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<socialAssistanceFundMIS.Models.Application>
+
+@{
+    ViewData["Title"] = "Applications List";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <h2>Applications</h2>
+
+    <p>
+        <a href="@Url.Action("Create")" class="btn btn-primary">Create New Application</a>
+    </p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Program Name</th>
+                <th>Status</th>
+                <th>Application Date</th>
+                <th>Location</th>
+                <th>Date Created</th>
+                <th>Date Updated</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item?.Program?.Name || ""</td>
+                    <td>@item?.Status || ""</td>
+                    <td>@item?.ApplicationDate || ""</td>
+                    <td>@item?.CreatedAt || ""</td>
+                    <td>@item?.UpdatedAt || ""</td>
+                    <td>
+                        <a href="@Url.Action("View", new { id = item?.Id })" class="btn btn-info btn-sm">Edit</a>
+                        <a href="@Url.Action("Edit", new { id = item?.Id })" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="@Url.Action("Delete", new { id = item?.Id })" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
