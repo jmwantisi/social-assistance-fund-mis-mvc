@@ -4,41 +4,51 @@
     ViewData["Title"] = "Applications List";
 }
 
-<div class="container mt-4">
+<div class="col-md-12">
     <h2>Applications</h2>
 
     <p>
-        <a href="@Url.Action("Create")" class="btn btn-primary">Create New Application</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary">Create New</a>
     </p>
 
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Program Name</th>
-                <th>Status</th>
                 <th>Application Date</th>
-                <th>Location</th>
-                <th>Date Created</th>
-                <th>Date Updated</th>
-                <th></th>
+                <th>Applicant</th>
+                <th>Program</th>
+                <th>Status</th>
+                <th>Decleration Date</th>
+                <th>(Offical Details) Collected By and Date</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item?.Program?.Name || ""</td>
-                    <td>@item?.Status || ""</td>
-                    <td>@item?.ApplicationDate || ""</td>
-                    <td>@item?.CreatedAt || ""</td>
-                    <td>@item?.UpdatedAt || ""</td>
+                    <td>@item?.ApplicationDate</td>
                     <td>
-                        <a href="@Url.Action("View", new { id = item?.Id })" class="btn btn-info btn-sm">Edit</a>
+                        <a href="@Url.Action("Applicants", new { id = item?.Applicant?.Id })">
+                            @item?.Applicant?.FirstName @item?.Applicant?.LastName
+                        </a>
+                    </td>
+                    <td>@item?.Program?.Name</td>
+                    <td>@item?.Status?.Name</td>
+                    <td>@item?.DeclarationDate</td>
+                    <td>
+                        @(item?.OfficialRecord?.Officer != null
+                            ? $"{item.OfficialRecord.Officer.FirstName} {item.OfficialRecord.Officer.LastName} ({item.OfficialRecord.Officer.Designation?.Name}) - {item.OfficialRecord.OfficiationDate}"
+                            : "---Not signed---")
+                    </td>
+                    <td>
+                        <a href="@Url.Action("View", new { id = item?.Id })" class="btn btn-info btn-sm">View</a>
                         <a href="@Url.Action("Edit", new { id = item?.Id })" class="btn btn-warning btn-sm">Edit</a>
                         <a href="@Url.Action("Delete", new { id = item?.Id })" class="btn btn-danger btn-sm">Delete</a>
                     </td>
                 </tr>
             }
         </tbody>
+
     </table>
 </div>
