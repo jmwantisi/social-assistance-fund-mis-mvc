@@ -1,0 +1,52 @@
+﻿@model List<SocialAssistanceFundMisMcv.ViewModels.ApplicantViewModel>
+
+<h2>Applicants</h2>
+
+<p>
+    <a href="@Url.Action("Create")" class="btn btn-primary">Create New</a>
+</p>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Full Name</th>
+                <th>DOB</th>
+                <th>Gender</th>
+                <th>Marital</th>
+                <th>ID Number</th>
+                <th>Location</th>
+                <th>Postal Address</th>
+                <th>Physical Address</th>
+                <th>Telephone Contant(s)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var applicant in Model)
+            {
+                <tr>
+                    <td>@applicant.FullName</td>
+                    <td>@applicant.FormattedDob</td>
+                    <td>@applicant.SexName</td>
+                    <td>@applicant.MaritalStatusName</td>
+                    <td>@applicant.IdentityCardNumber</td>
+                    <td>---</td>
+                    <td>@applicant.PostalAddress</td>
+                    <td>@applicant.PhysicalAddress</td>
+                    <td>@applicant.PhoneNumbersListString</td>
+                    <td>
+                        <a href="@Url.Action("Details", "Application", new { id = applicant.Id })" class="btn btn-info btn-sm">View</a>
+                        <a href="@Url.Action("Edit", "Application", new { id = applicant.Id })" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="@Url.Action("Delete", "Application", new { id = applicant.Id })" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No applications found.</p>
+}
