@@ -43,13 +43,13 @@
     </div>
 
     <div class="mb-3">
-        <label asp-for="CountyId" class="form-label">Geographical Location</label>
+        <label asp-for="VillageId" class="form-label">Geographical Location</label>
         <div class="col-md-12">
-            <label asp-for="CountyId" class="form-label">County</label>
-            <select asp-for="CountyId" asp-items="@(new SelectList(Model.Counties, "Id", "Name"))" class="form-control">
+            <label asp-for="VillageId" class="form-label">County</label>
+            <select asp-for="VillageId" asp-items="@(new SelectList(Model.Villages, "Id", "Name"))" class="form-control">
                 <option value="">-- Select County --</option>
             </select>
-            <span asp-validation-for="CountyId" class="text-danger"></span>
+            <span asp-validation-for="VillageId" class="text-danger"></span>
         </div>
     </div>
 
@@ -65,6 +65,29 @@
         <span asp-validation-for="PhysicalAddress" class="text-danger"></span>
     </div>
 
+    <div class="mb-3">
+        <label class="form-label">Phone Numbers</label>
+        <div id="phoneNumbersContainer">
+            <div class="phone-number-entry d-flex align-items-center">
+                <select name="PhoneNumbers[0].PhoneNumberTypeId" class="form-control me-2">
+                    <option value="">-- Select Type --</option>
+                    @if (Model?.PhoneNumberTypes != null && Model.PhoneNumberTypes.Any())
+                    {
+                        foreach (var type in Model.PhoneNumberTypes)
+                        {
+                            <option value="@type.Id">@type.Name</option>
+                        }
+                    }
+                </select>
+
+                <input name="PhoneNumbers[0].PhoneNumber" class="form-control me-2" placeholder="Enter Phone Number" />
+                <button type="button" class="btn btn-danger remove-phone" onclick="removePhoneNumber(this)">X</button>
+            </div>
+        </div>
+        <button type="button" class="btn btn-success mt-2" onclick="addPhoneNumber()">Add Phone Number</button>
+    </div>
+
+
     <button type="submit" class="btn btn-primary">Submit</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
@@ -73,4 +96,35 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        let phoneIndex = 1;
+
+        function addPhoneNumber() {
+            let container = document.getElementById("phoneNumbersContainer");
+            let newField = document.createElement("div");
+            newField.classList.add("phone-number-entry", "d-flex", "align-items-center");
+            newField.innerHTML = `
+                <select name="PhoneNumbers[${phoneIndex}].PhoneNumberTypeId" class="form-control me-2">
+                    <option value="">-- Select Type --</option>
+                    @foreach (var type in Model.PhoneNumberTypes)
+                    {
+                                        <option value="@type.Id">@type.Name</option>
+                    }
+                </select>
+                <input name="PhoneNumbers[${phoneIndex}].PhoneNumber" class="form-control me-2" placeholder="Enter Phone Number" />
+                <button type="button" class="btn btn-danger remove-phone" onclick="removePhoneNumber(this)">X</button>
+            `;
+            container.appendChild(newField);
+            phoneIndex++;
+        }
+
+        function removePhoneNumber(button) {
+            button.parentElement.remove();
+        }
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+
