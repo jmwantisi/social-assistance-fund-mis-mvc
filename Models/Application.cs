@@ -11,16 +11,16 @@ namespace socialAssistanceFundMIS.Models
 
         public DateTime ApplicationDate { get; set; }
 
-        public int ApplicantId { get; set; }
+        public int? ApplicantId { get; set; }
         public Applicant? Applicant { get; set; }
 
-        public int ProgramId { get; set; }
+        public int? ProgramId { get; set; }
         public AssistanceProgram? Program { get; set; }
 
-        public int StatusId { get; set; } = 0;  // Pending
+        public int? StatusId { get; set; } = 1;  // Pending
         public Status? Status { get; set; }
 
-        public int OfficialRecordId { get; set; }
+        public int? OfficialRecordId { get; set; }
         public OfficialRecord? OfficialRecord { get; set; }
 
         public DateTime DeclarationDate { get; set; }
