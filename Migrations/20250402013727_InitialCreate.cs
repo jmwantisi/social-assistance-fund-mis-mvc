@@ -212,10 +212,6 @@ namespace SocialAssistanceFundMisMcv.Migrations
                     SexId = table.Column<int>(type: "int", nullable: false),
                     Dob = table.Column<DateTime>(type: "datetime2", nullable: false),
                     MaritialStatusId = table.Column<int>(type: "int", nullable: false),
-                    CountyId = table.Column<int>(type: "int", nullable: true),
-                    SubCountyId = table.Column<int>(type: "int", nullable: true),
-                    LocationId = table.Column<int>(type: "int", nullable: true),
-                    SubLocationId = table.Column<int>(type: "int", nullable: true),
                     VillageId = table.Column<int>(type: "int", nullable: true),
                     IdentityCardNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PostalAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -227,26 +223,6 @@ namespace SocialAssistanceFundMisMcv.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Applicants", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Applicants_GeographicLocations_CountyId",
-                        column: x => x.CountyId,
-                        principalTable: "GeographicLocations",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Applicants_GeographicLocations_LocationId",
-                        column: x => x.LocationId,
-                        principalTable: "GeographicLocations",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Applicants_GeographicLocations_SubCountyId",
-                        column: x => x.SubCountyId,
-                        principalTable: "GeographicLocations",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Applicants_GeographicLocations_SubLocationId",
-                        column: x => x.SubLocationId,
-                        principalTable: "GeographicLocations",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Applicants_GeographicLocations_VillageId",
                         column: x => x.VillageId,
@@ -303,10 +279,10 @@ namespace SocialAssistanceFundMisMcv.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ApplicationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ApplicantId = table.Column<int>(type: "int", nullable: false),
-                    ProgramId = table.Column<int>(type: "int", nullable: false),
-                    StatusId = table.Column<int>(type: "int", nullable: false),
-                    OfficialRecordId = table.Column<int>(type: "int", nullable: false),
+                    ApplicantId = table.Column<int>(type: "int", nullable: true),
+                    ProgramId = table.Column<int>(type: "int", nullable: true),
+                    StatusId = table.Column<int>(type: "int", nullable: true),
+                    OfficialRecordId = table.Column<int>(type: "int", nullable: true),
                     DeclarationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Removed = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -319,26 +295,22 @@ namespace SocialAssistanceFundMisMcv.Migrations
                         name: "FK_Applications_Applicants_ApplicantId",
                         column: x => x.ApplicantId,
                         principalTable: "Applicants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Applications_AssistancePrograms_ProgramId",
                         column: x => x.ProgramId,
                         principalTable: "AssistancePrograms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Applications_OfficialRecords_OfficialRecordId",
                         column: x => x.OfficialRecordId,
                         principalTable: "OfficialRecords",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Applications_Statuses_StatusId",
                         column: x => x.StatusId,
                         principalTable: "Statuses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -352,16 +324,6 @@ namespace SocialAssistanceFundMisMcv.Migrations
                 column: "PhoneNumberTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Applicants_CountyId",
-                table: "Applicants",
-                column: "CountyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Applicants_LocationId",
-                table: "Applicants",
-                column: "LocationId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Applicants_MaritialStatusId",
                 table: "Applicants",
                 column: "MaritialStatusId");
@@ -370,16 +332,6 @@ namespace SocialAssistanceFundMisMcv.Migrations
                 name: "IX_Applicants_SexId",
                 table: "Applicants",
                 column: "SexId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Applicants_SubCountyId",
-                table: "Applicants",
-                column: "SubCountyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Applicants_SubLocationId",
-                table: "Applicants",
-                column: "SubLocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Applicants_VillageId",
