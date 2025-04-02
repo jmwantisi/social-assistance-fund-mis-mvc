@@ -32,5 +32,10 @@ namespace SocialAssistanceFundMisMcv.Services
         {
             return await _context.Statuses.ToListAsync();
         }
+
+        public async Task<IEnumerable<PhoneNumberType>> GetPhoneNumberTypesAsync()
+        {
+            return await _context.PhoneNumberTypes.ToListAsync();
+        }
     }
 }
