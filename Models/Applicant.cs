@@ -28,21 +28,6 @@ namespace socialAssistanceFundMIS.Data
         public int? MaritialStatusId { get; set; }
         public MaritalStatus? MaritialStatus { get; set; }
 
-        [ForeignKey("CountyId")]
-        public int? CountyId { get; set; }
-        public GeographicLocation? County { get; set; }
-
-        [ForeignKey("SubCountyId")]
-        public int? SubCountyId { get; set; }
-        public GeographicLocation? SubCounty { get; set; }
-
-        [ForeignKey("LocationId")]
-        public int? LocationId { get; set; }
-        public GeographicLocation? Location { get; set; }
-
-        [ForeignKey("SubLocationId")]
-        public int? SubLocationId { get; set; }
-        public GeographicLocation? SubLocation { get; set; }
 
         [ForeignKey("VillageId")]
         public int? VillageId { get; set; }
