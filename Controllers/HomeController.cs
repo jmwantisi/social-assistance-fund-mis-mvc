@@ -4,6 +4,7 @@ using socialAssistanceFundMIS.Models;
 using socialAssistanceFundMIS.Data;
 using SocialAssistanceFundMisMcv.ViewModels;
 using SocialAssistanceFundMisMcv.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace SocialAssistanceFundMisMcv.Controllers
 {
@@ -11,12 +12,16 @@ namespace SocialAssistanceFundMisMcv.Controllers
     {
         private readonly ApplicationService _applicationService;
         private readonly LookupService _lookupService; // Service for fetching lookups
+        private readonly ApplicantService _applicantService;
+        private readonly ApplicationDbContext _context;
 
 
-        public HomeController(ApplicationService applicationService, LookupService lookupService)
+        public HomeController(ApplicationService applicationService, LookupService lookupService, ApplicantService applicantService, ApplicationDbContext context)
         {
             _applicationService = applicationService;
             _lookupService = lookupService;
+            _applicantService = applicantService;
+            _context = context;
         }
 
         // GET: Application
@@ -44,9 +49,12 @@ namespace SocialAssistanceFundMisMcv.Controllers
             var model = new ApplicationViewModel
             {
                 Programs = await _lookupService.GetProgramsAsync(),
-                Sexes = await _lookupService.GetSexesAsync(),
-                MaritalStatuses = await _lookupService.GetMaritalStatusesAsync(),
-                Statuses = await _lookupService.GetStatusesAsync()
+                Applicants = await _context.Applicants.Select(a => new Applicant()
+                {
+                    Id = a.Id,
+                    FirstName = a.FirstName + " " + (string.IsNullOrEmpty(a.MiddleName) ? "" : a.MiddleName + " ") + a.LastName
+                })
+                .ToListAsync()
             };
 
             return View(model);
@@ -62,7 +70,7 @@ namespace SocialAssistanceFundMisMcv.Controllers
                 var application = new Application
                 {
                     ApplicationDate = model.ApplicationDate,
-                    Applicant = new Applicant { Id = model.applicantId },
+                    Applicant = new Applicant { Id = model.ApplicantId },
                     Program = new AssistanceProgram { Id = model.SelectedProgramId },
                 };
 
@@ -72,10 +80,10 @@ namespace SocialAssistanceFundMisMcv.Controllers
 
             // Reload dropdowns if validation fails
             model.Programs = await _lookupService.GetProgramsAsync();
-            model.Sexes = await _lookupService.GetSexesAsync();
-            model.MaritalStatuses = await _lookupService.GetMaritalStatusesAsync();
-
+            model.Applicants = await _applicantService.GetAllApplicantsAsync();
+         
             return View(model);
+        
         }
 
         // GET: Application/Edit/5
