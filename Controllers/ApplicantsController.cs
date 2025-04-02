@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using socialAssistanceFundMIS.Data;
+using socialAssistanceFundMIS.Models;
 using socialAssistanceFundMIS.Services;
 using SocialAssistanceFundMisMcv.Services;
 using SocialAssistanceFundMisMcv.ViewModels;
@@ -11,26 +13,42 @@ namespace SocialAssistanceFundMisMcv.Controllers
         private readonly ApplicationDbContext _context;
         private readonly LookupService _lookupService;
         private readonly GeographicLocationService _geographicLocationService;
+        private readonly ApplicantService _applicantService;
 
-        public ApplicantsController(ApplicationDbContext context, LookupService lookupService, GeographicLocationService geographicLocationService)
+        public ApplicantsController(ApplicationDbContext context, LookupService lookupService, GeographicLocationService geographicLocationService, ApplicantService applicantService)
         {
             _context = context;
             _lookupService = lookupService;
             _geographicLocationService = geographicLocationService;
+            _applicantService = applicantService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var applicants = _context.Applicants.Select(a => new ApplicantViewModel
-            {
-                Id = a.Id,
-                FirstName = a.FirstName,
-                LastName = a.LastName,
-                IdentityCardNumber = a.IdentityCardNumber,
-                PhysicalAddress = a.PhysicalAddress
-            }).ToList();
+            var applicants = await _context.Applicants
+                .Include(a => a.Sex) // Ensures that 'Sex' is loaded
+                .Select(a => new ApplicantViewModel
+                {
+                    Id = a.Id,
+                    FirstName = a.FirstName,
+                    MiddleName = a.MiddleName,
+                    LastName = a.LastName,
+                    SexName = a.Sex != null ? a.Sex.Name : "Not Specified",
+                    MaritalStatusName = a.MaritialStatus != null ? a.MaritialStatus.Name : "Not Specified",
+                    Dob = a.Dob,
+                    IdentityCardNumber = a.IdentityCardNumber,
+                    PhysicalAddress = a.PhysicalAddress,
+                    PostalAddress = a.PostalAddress,
+                    PhoneNumbersListString = a.PhoneNumbers != null && a.PhoneNumbers.Any()
+                    ? string.Join(", ", a.PhoneNumbers.Select(p => p.PhoneNumber))
+                    : "No Phone Number"
+                    })
+                .ToListAsync();
+
             return View(applicants);
         }
+
+
 
         public async Task<IActionResult> Create()
         {
@@ -38,14 +56,26 @@ namespace SocialAssistanceFundMisMcv.Controllers
             {
                 Sexes = await _lookupService.GetSexesAsync(),
                 MaritalStatuses = await _lookupService.GetMaritalStatusesAsync(),
-                Counties = await _geographicLocationService.GetVillagesWithHierarchyAsync()
+                Villages = await _geographicLocationService.GetVillagesWithHierarchyAsync(),
+                PhoneNumberTypes = await _lookupService.GetPhoneNumberTypesAsync() ?? new List<PhoneNumberType>()
             };
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult Create(ApplicantViewModel model)
+        public async Task<IActionResult> Create(ApplicantViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                foreach (var state in ModelState)
+                {
+                    foreach (var error in state.Value.Errors)
+                    {
+                        Console.WriteLine($"Field: {state.Key}, Error: {error.ErrorMessage}");
+                    }
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 var applicant = new Applicant
@@ -56,14 +86,22 @@ namespace SocialAssistanceFundMisMcv.Controllers
                     Dob = model.Dob,
                     MaritialStatusId = model.MaritalStatusId,
                     IdentityCardNumber = model.IdentityCardNumber,
-                    PhysicalAddress = model.PhysicalAddress
+                    PhysicalAddress = model.PhysicalAddress,
+                    VillageId = model.VillageId
                 };
-                _context.Applicants.Add(applicant);
-                _context.SaveChanges();
+
+                var phoneNumbers = model.PhoneNumbers
+                    .Where(p => !string.IsNullOrWhiteSpace(p.PhoneNumber))
+                    .Select(p => (p.PhoneNumber, p.PhoneNumberTypeId))
+                    .ToList();
+
+                await _applicantService.CreateApplicantAsync(applicant, phoneNumbers);
                 return RedirectToAction("Index");
             }
-            return View(model);
+
+            return RedirectToAction("Create");
         }
+
 
         public IActionResult Edit(int id)
         {
