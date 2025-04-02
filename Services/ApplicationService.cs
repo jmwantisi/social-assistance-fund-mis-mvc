@@ -18,6 +18,17 @@ namespace socialAssistanceFundMIS.Services
             if (application == null)
                 throw new ArgumentNullException(nameof(application));
 
+            // Load existing Applicant from DB
+            var existingApplicant = await _context.Applicants.FindAsync(application?.Applicant?.Id);
+            if (existingApplicant == null)
+                throw new Exception("Applicant not found");
+
+            var existingProgram = await _context.AssistancePrograms.FindAsync(application?.Program?.Id);
+            if (existingProgram == null)
+                throw new Exception("Applicant not found");
+
+            application.Applicant = existingApplicant; // Assign existing Applicant
+            application.Program = existingProgram; // Assign existing Program
             application.CreatedAt = DateTime.UtcNow;
             application.UpdatedAt = DateTime.UtcNow;
 
@@ -26,6 +37,8 @@ namespace socialAssistanceFundMIS.Services
 
             return await GetApplicationByIdAsync(application.Id);
         }
+
+
 
         public async Task<Application?> GetApplicationByIdAsync(int id)
         {
