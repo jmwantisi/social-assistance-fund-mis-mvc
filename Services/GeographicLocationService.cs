@@ -46,6 +46,65 @@ namespace socialAssistanceFundMIS.Services
             return data;
         }
 
+        public async Task<string> GetVillageHierarchyByIdAsync(int? villageId)
+        {
+            if (villageId == null)
+            {
+                return "Village ID is required";
+            }
+
+            var village = await _context.GeographicLocations
+                .Where(gl => gl.Id == villageId && gl.GeographicLocationType.Name == "Village")
+                .Include(gl => gl.GeographicLocationParent) // Sub-Location
+                    .ThenInclude(subLoc => subLoc.GeographicLocationParent) // Location
+                        .ThenInclude(loc => loc.GeographicLocationParent) // Sub-County
+                            .ThenInclude(subCounty => subCounty.GeographicLocationParent) // County
+                .AsNoTracking() // Prevents EF from tracking changes
+                .FirstOrDefaultAsync();
+
+            if (village == null)
+            {
+                return "Village not found";
+            }
+
+            return FormatLocationHierarchy(village); // Return formatted hierarchy as string
+        }
+
+        // Helper function to format hierarchy properly
+        private string FormatLocationHierarchy(GeographicLocation village)
+        {
+            var names = new List<string>();
+
+            if (!string.IsNullOrEmpty(village.Name)) names.Add(village.Name);
+            if (village.GeographicLocationParent != null)
+            {
+                if (!string.IsNullOrEmpty(village.GeographicLocationParent.Name))
+                    names.Add(village.GeographicLocationParent.Name);
+
+                if (village.GeographicLocationParent.GeographicLocationParent != null)
+                {
+                    if (!string.IsNullOrEmpty(village.GeographicLocationParent.GeographicLocationParent.Name))
+                        names.Add(village.GeographicLocationParent.GeographicLocationParent.Name);
+
+                    if (village.GeographicLocationParent.GeographicLocationParent.GeographicLocationParent != null)
+                    {
+                        if (!string.IsNullOrEmpty(village.GeographicLocationParent.GeographicLocationParent.GeographicLocationParent.Name))
+                            names.Add(village.GeographicLocationParent.GeographicLocationParent.GeographicLocationParent.Name);
+
+                        if (village.GeographicLocationParent.GeographicLocationParent.GeographicLocationParent.GeographicLocationParent != null)
+                        {
+                            if (!string.IsNullOrEmpty(village.GeographicLocationParent.GeographicLocationParent.GeographicLocationParent.GeographicLocationParent.Name))
+                                names.Add(village.GeographicLocationParent.GeographicLocationParent.GeographicLocationParent.GeographicLocationParent.Name);
+                        }
+                    }
+                }
+            }
+
+            return string.Join(", ", names); // Return formatted hierarchy as a string
+        }
+
+
+
 
         public async Task<GeographicLocation> CreateGeographicLocationAsync(GeographicLocation location)
         {
