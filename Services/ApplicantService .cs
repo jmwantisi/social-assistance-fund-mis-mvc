@@ -10,7 +10,7 @@ namespace socialAssistanceFundMIS.Services
 {
     public interface IApplicantService
     {
-        Task<Applicant> CreateApplicantAsync(Applicant applicant, List<string> phoneNumbers);
+        Task<Applicant> CreateApplicantAsync(Applicant applicant, List<(string phoneNumber, int phoneNumberTypeId)> phoneNumbers);
         Task<Applicant> GetApplicantByIdAsync(int id);
         Task<List<Applicant>> GetAllApplicantsAsync();
         Task<Applicant> UpdateApplicantAsync(int id, Applicant applicant, List<string> phoneNumbers);
@@ -27,7 +27,7 @@ namespace socialAssistanceFundMIS.Services
             _context = context;
         }
 
-        public async Task<Applicant> CreateApplicantAsync(Applicant applicant, List<string> phoneNumbers)
+        public async Task<Applicant> CreateApplicantAsync(Applicant applicant, List<(string phoneNumber, int phoneNumberTypeId)> phoneNumbers)
         {
             if (applicant == null)
                 throw new ArgumentNullException(nameof(applicant));
@@ -40,16 +40,17 @@ namespace socialAssistanceFundMIS.Services
 
             if (phoneNumbers != null && phoneNumbers.Any())
             {
-                foreach (var phoneNumber in phoneNumbers)
+                foreach (var (phoneNumber, phoneNumberTypeId) in phoneNumbers)
                 {
                     var newPhoneNumber = new ApplicantPhoneNumber
                     {
                         PhoneNumber = phoneNumber,
+                        PhoneNumberTypeId = phoneNumberTypeId,
                         ApplicantId = applicant.Id,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow
                     };
-                    applicant.PhoneNumbers.Add(newPhoneNumber);
+                    _context.ApplicantPhoneNumbers.Add(newPhoneNumber);
                 }
                 await _context.SaveChangesAsync();
             }
@@ -57,16 +58,13 @@ namespace socialAssistanceFundMIS.Services
             return applicant;
         }
 
+
         public async Task<Applicant> GetApplicantByIdAsync(int id)
         {
             return await _context.Applicants
                 .Include(a => a.PhoneNumbers.Where(p => !p.Removed))
                 .Include(a => a.Sex)
                 .Include(a => a.MaritialStatus)
-                .Include(a => a.County)
-                .Include(a => a.SubCounty)
-                .Include(a => a.Location)
-                .Include(a => a.SubLocation)
                 .Include(a => a.Village)
                 .FirstOrDefaultAsync(a => a.Id == id && !a.Removed);
         }
@@ -93,10 +91,6 @@ namespace socialAssistanceFundMIS.Services
             existingApplicant.SexId = updatedApplicant.SexId;
             existingApplicant.Dob = updatedApplicant.Dob;
             existingApplicant.MaritialStatusId = updatedApplicant.MaritialStatusId;
-            existingApplicant.CountyId = updatedApplicant.CountyId;
-            existingApplicant.SubCountyId = updatedApplicant.SubCountyId;
-            existingApplicant.LocationId = updatedApplicant.LocationId;
-            existingApplicant.SubLocationId = updatedApplicant.SubLocationId;
             existingApplicant.VillageId = updatedApplicant.VillageId;
             existingApplicant.IdentityCardNumber = updatedApplicant.IdentityCardNumber;
             existingApplicant.PostalAddress = updatedApplicant.PostalAddress;
