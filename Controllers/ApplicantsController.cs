@@ -25,8 +25,11 @@ namespace SocialAssistanceFundMisMcv.Controllers
 
         public async Task<IActionResult> Index()
         {
+            // Step 1: Fetch applicants first (without async calls in Select)
             var applicants = await _context.Applicants
-                .Include(a => a.Sex) // Ensures that 'Sex' is loaded
+                .Include(a => a.Sex)
+                .Include(a => a.MaritialStatus)
+                .Include(a => a.PhoneNumbers) // Ensure phone numbers are loaded
                 .Select(a => new ApplicantViewModel
                 {
                     Id = a.Id,
@@ -39,14 +42,25 @@ namespace SocialAssistanceFundMisMcv.Controllers
                     IdentityCardNumber = a.IdentityCardNumber,
                     PhysicalAddress = a.PhysicalAddress,
                     PostalAddress = a.PostalAddress,
+                    VillageId = a.VillageId, // Store VillageId to fetch later
                     PhoneNumbersListString = a.PhoneNumbers != null && a.PhoneNumbers.Any()
-                    ? string.Join(", ", a.PhoneNumbers.Select(p => p.PhoneNumber))
-                    : "No Phone Number"
-                    })
-                .ToListAsync();
+                        ? string.Join(", ", a.PhoneNumbers.Select(p => p.PhoneNumber))
+                        : "No Phone Number"
+                })
+                .ToListAsync(); // Fetch all data first before calling async functions
+
+            // Step 2: Fetch village locations separately in a loop
+            foreach (var applicant in applicants)
+            {
+                if (applicant.VillageId.HasValue)
+                {
+                    applicant.Location = await _geographicLocationService.GetVillageHierarchyByIdAsync(applicant.VillageId);
+                }
+            }
 
             return View(applicants);
         }
+
 
 
 
