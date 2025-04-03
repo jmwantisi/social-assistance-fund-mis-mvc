@@ -61,9 +61,6 @@ namespace SocialAssistanceFundMisMcv.Controllers
             return View(applicants);
         }
 
-
-
-
         public async Task<IActionResult> Create()
         {
             var model = new ApplicantViewModel
@@ -101,6 +98,7 @@ namespace SocialAssistanceFundMisMcv.Controllers
                     MaritialStatusId = model.MaritalStatusId,
                     IdentityCardNumber = model.IdentityCardNumber,
                     PhysicalAddress = model.PhysicalAddress,
+                    PostalAddress = model.PostalAddress,
                     VillageId = model.VillageId
                 };
 
@@ -117,9 +115,12 @@ namespace SocialAssistanceFundMisMcv.Controllers
         }
 
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var applicant = _context.Applicants.Find(id);
+            var applicant = await _context.Applicants
+                .Include(a => a.PhoneNumbers) // Ensure phone numbers are loaded
+                .FirstOrDefaultAsync(a => a.Id == id);
+
             if (applicant == null) return NotFound();
 
             var model = new ApplicantViewModel
@@ -131,33 +132,94 @@ namespace SocialAssistanceFundMisMcv.Controllers
                 Dob = applicant.Dob,
                 MaritalStatusId = applicant.MaritialStatusId,
                 IdentityCardNumber = applicant.IdentityCardNumber,
+                PostalAddress = applicant.PostalAddress,
                 PhysicalAddress = applicant.PhysicalAddress,
-                Sexes = _context.Sexes.ToList(),
-                MaritalStatuses = _context.MaritalStatuses.ToList()
+                VillageId = applicant.VillageId,
+                Sexes = await _lookupService.GetSexesAsync(),
+                MaritalStatuses = await _lookupService.GetMaritalStatusesAsync(),
+                Villages = await _geographicLocationService.GetVillagesWithHierarchyAsync(),
+                PhoneNumberTypes = await _lookupService.GetPhoneNumberTypesAsync() ?? new List<PhoneNumberType>(),
+                PhoneNumbers = applicant.PhoneNumbers?.Select(pn => new ApplicantPhoneNumber
+                {
+                    Id = pn.Id,
+                    PhoneNumber = pn.PhoneNumber,
+                    PhoneNumberTypeId = pn.PhoneNumberTypeId
+                }).ToList() ?? new List<ApplicantPhoneNumber>()
             };
+
             return View(model);
         }
+
 
         [HttpPost]
-        public IActionResult Edit(ApplicantViewModel model)
+        public async Task<IActionResult> Edit(ApplicantViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var applicant = _context.Applicants.Find(model.Id);
-                if (applicant == null) return NotFound();
-
-                applicant.FirstName = model.FirstName;
-                applicant.LastName = model.LastName;
-                applicant.SexId = model.SexId;
-                applicant.Dob = model.Dob;
-                applicant.MaritialStatusId = model.MaritalStatusId;
-                applicant.IdentityCardNumber = model.IdentityCardNumber;
-                applicant.PhysicalAddress = model.PhysicalAddress;
-
-                _context.SaveChanges();
-                return RedirectToAction("Index");
+                foreach (var state in ModelState)
+                {
+                    foreach (var error in state.Value.Errors)
+                    {
+                        Console.WriteLine($"Field: {state.Key}, Error: {error.ErrorMessage}");
+                    }
+                }
+                return View(model); // Return view with errors
             }
-            return View(model);
+
+            var applicant = await _context.Applicants
+                .Include(a => a.PhoneNumbers) // Ensure phone numbers are loaded
+                .FirstOrDefaultAsync(a => a.Id == model.Id);
+
+            if (applicant == null) return NotFound();
+
+            // Update applicant details
+            applicant.FirstName = model.FirstName;
+            applicant.LastName = model.LastName;
+            applicant.SexId = model.SexId;
+            applicant.Dob = model.Dob;
+            applicant.MaritialStatusId = model.MaritalStatusId;
+            applicant.IdentityCardNumber = model.IdentityCardNumber;
+            applicant.PhysicalAddress = model.PhysicalAddress;
+            applicant.PostalAddress = model.PostalAddress;
+            applicant.VillageId = model.VillageId;
+
+            // Handle phone numbers
+            var existingPhoneNumbers = applicant.PhoneNumbers.ToList();
+
+            // Remove phone numbers that are not in the updated list
+            foreach (var existingPhone in existingPhoneNumbers)
+            {
+                if (!model.PhoneNumbers.Any(p => p.Id == existingPhone.Id))
+                {
+                    _context.ApplicantPhoneNumbers.Remove(existingPhone);
+                }
+            }
+
+            // Add or update phone numbers
+            foreach (var phone in model.PhoneNumbers)
+            {
+                var existingPhone = existingPhoneNumbers.FirstOrDefault(p => p.Id == phone.Id);
+                if (existingPhone != null)
+                {
+                    // Update existing phone number
+                    existingPhone.PhoneNumber = phone.PhoneNumber;
+                    existingPhone.PhoneNumberTypeId = phone.PhoneNumberTypeId;
+                }
+                else
+                {
+                    // Add new phone number
+                    applicant.PhoneNumbers.Add(new ApplicantPhoneNumber
+                    {
+                        PhoneNumber = phone.PhoneNumber,
+                        PhoneNumberTypeId = phone.PhoneNumberTypeId,
+                        ApplicantId = applicant.Id
+                    });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
+
     }
 }
