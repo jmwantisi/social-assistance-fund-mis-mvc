@@ -44,7 +44,7 @@ namespace SocialAssistanceFundMisMcv.Controllers
                     PostalAddress = a.PostalAddress,
                     VillageId = a.VillageId, // Store VillageId to fetch later
                     PhoneNumbersListString = a.PhoneNumbers != null && a.PhoneNumbers.Any()
-                        ? string.Join(", ", a.PhoneNumbers.Select(p => p.PhoneNumber))
+                        ? string.Join(", ", a.PhoneNumbers.Select(p => p.PhoneNumber + "(" + p!.PhoneNumberType!.Name + ")"))
                         : "No Phone Number"
                 })
                 .ToListAsync(); // Fetch all data first before calling async functions
