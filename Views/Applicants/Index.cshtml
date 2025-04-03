@@ -37,9 +37,9 @@
                     <td>@applicant.PhysicalAddress</td>
                     <td>@applicant.PhoneNumbersListString</td>
                     <td>
-                        <a href="@Url.Action("Details", "Application", new { id = applicant.Id })" class="btn btn-info btn-sm">View</a>
-                        <a href="@Url.Action("Edit", "Application", new { id = applicant.Id })" class="btn btn-warning btn-sm">Edit</a>
-                        <a href="@Url.Action("Delete", "Application", new { id = applicant.Id })" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="@Url.Action("Details", "Applicants", new { id = applicant.Id })" class="btn btn-info btn-sm">View</a>
+                        <a href="@Url.Action("Edit", "Applicants", new { id = applicant.Id })" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="@Url.Action("Delete", "Applicants", new { id = applicant.Id })" class="btn btn-danger btn-sm">Delete</a>
                     </td>
                 </tr>
             }
