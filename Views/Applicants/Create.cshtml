@@ -45,9 +45,8 @@
     <div class="mb-3">
         <label asp-for="VillageId" class="form-label">Geographical Location</label>
         <div class="col-md-12">
-            <label asp-for="VillageId" class="form-label">County</label>
             <select asp-for="VillageId" asp-items="@(new SelectList(Model.Villages, "Id", "Name"))" class="form-control">
-                <option value="">-- Select County --</option>
+                <option value="">-- Select Location --</option>
             </select>
             <span asp-validation-for="VillageId" class="text-danger"></span>
         </div>
@@ -57,6 +56,12 @@
         <label asp-for="IdentityCardNumber" class="form-label">Identity Card Number</label>
         <input asp-for="IdentityCardNumber" class="form-control" />
         <span asp-validation-for="IdentityCardNumber" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PostalAddress" class="form-label">Postal Address</label>
+        <input asp-for="PostalAddress" class="form-control" />
+        <span asp-validation-for="PostalAddress" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
