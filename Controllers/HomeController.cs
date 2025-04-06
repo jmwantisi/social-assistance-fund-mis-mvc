@@ -62,29 +62,33 @@ namespace SocialAssistanceFundMisMcv.Controllers
 
         // POST: Application/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ApplicationViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var application = new Application
+                model.Programs = await _lookupService.GetProgramsAsync();
+                model.Applicants = await _context.Applicants.Select(a => new Applicant()
                 {
-                    ApplicationDate = model.ApplicationDate,
-                    Applicant = new Applicant { Id = model.ApplicantId },
-                    Program = new AssistanceProgram { Id = model.SelectedProgramId },
-                };
+                    Id = a.Id,
+                    FirstName = a.FirstName + " " + (string.IsNullOrEmpty(a.MiddleName) ? "" : a.MiddleName + " ") + a.LastName
+                }).ToListAsync();
 
-                await _applicationService.CreateApplicationAsync(application);
-                return RedirectToAction(nameof(Index));
+                return View(model);
             }
 
-            // Reload dropdowns if validation fails
-            model.Programs = await _lookupService.GetProgramsAsync();
-            model.Applicants = await _applicantService.GetAllApplicantsAsync();
-         
-            return View(model);
-        
+            var application = new Application
+            {
+                ProgramId = model.SelectedProgramId,
+                ApplicantId = model.ApplicantId,
+                DeclarationDate = model.DeclarationDate,
+                ApplicationDate = model.ApplicationDate
+            };
+
+            await _applicationService.CreateApplicationAsync(application);
+
+            return RedirectToAction("Index");
         }
+
 
         // GET: Application/Edit/5
         public async Task<IActionResult> Edit(int id)
@@ -94,45 +98,117 @@ namespace SocialAssistanceFundMisMcv.Controllers
             {
                 return NotFound();
             }
-            return View(application);
+
+            var model = new ApplicationViewModel
+            {
+                Id = application.Id, // Add Id to distinguish Edit vs Create
+                SelectedProgramId = application.ProgramId,
+                Programs = await _lookupService.GetProgramsAsync(),
+                ApplicantId = application.ApplicantId,
+                Applicants = await _context.Applicants.Select(a => new Applicant()
+                {
+                    Id = a.Id,
+                    FirstName = a.FirstName + " " + (string.IsNullOrEmpty(a.MiddleName) ? "" : a.MiddleName + " ") + a.LastName
+                }).ToListAsync()
+            };
+
+            return View("Create", model); // Use "Create" view for Edit as well
         }
+
 
         // POST: Application/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Application application)
+        public async Task<IActionResult> Edit(ApplicationViewModel model)
         {
-            if (id != application.Id)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                model.Programs = await _lookupService.GetProgramsAsync();
+                model.Applicants = await _context.Applicants.Select(a => new Applicant()
+                {
+                    Id = a.Id,
+                    FirstName = a.FirstName + " " + (string.IsNullOrEmpty(a.MiddleName) ? "" : a.MiddleName + " ") + a.LastName
+                }).ToListAsync();
+
+                return View("Create", model);
             }
 
-            if (ModelState.IsValid)
+            var application = new Application
             {
-                await _applicationService.UpdateApplicationAsync(id, application);
-                return RedirectToAction(nameof(Index));
-            }
-            return View(application);
+                ProgramId = model.SelectedProgramId,
+                ApplicantId = model.ApplicantId,
+                DeclarationDate = model.DeclarationDate,
+                ApplicationDate = model.ApplicationDate
+            };
+
+            application.ProgramId = model.SelectedProgramId;
+            application.ApplicantId = model.ApplicantId;
+
+            await _applicationService.UpdateApplicationAsync(model.Id, application);
+
+            return RedirectToAction("Index");
         }
 
-        // GET: Application/Delete/5
-        public async Task<IActionResult> Delete(int id)
+        // Applications/View/4
+        public async Task<IActionResult> View(int id)
         {
             var application = await _applicationService.GetApplicationByIdAsync(id);
             if (application == null)
             {
                 return NotFound();
             }
-            return View(application);
+
+            var model = new ApplicationViewModel
+            {
+                Id = application.Id,
+                SelectedProgramId = application.ProgramId,
+                ApplicantId = application.ApplicantId,
+                Programs = await _lookupService.GetProgramsAsync(),
+                Applicants = await _context.Applicants.Select(a => new Applicant()
+                {
+                    Id = a.Id,
+                    FirstName = a.FirstName + " " + (string.IsNullOrEmpty(a.MiddleName) ? "" : a.MiddleName + " ") + a.LastName
+                }).ToListAsync(),
+            };
+
+            ViewData["IsReadOnly"] = true; // Pass read-only mode
+            return View("Create", model);  // Reuse the Create view
         }
 
-        // POST: Application/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        //
+
+
+        // GET: Application/Delete/5
+        [HttpPost]
+        public async Task<IActionResult> Approve(int id, int statusId)
         {
-            await _applicationService.DeleteApplicationAsync(id);
-            return RedirectToAction(nameof(Index));
+
+            var result = await _applicationService.ApproveApplicationAsync(id, statusId);
+
+            if (!result)
+            {
+                TempData["Error"] = "Failed to approve application. The application may not exist.";
+                return RedirectToAction("Index");
+            }
+
+            TempData["Success"] = "Application approved successfully.";
+            return RedirectToAction("Index");
+
+        }
+
+        // GET: Application/Delete/5
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _applicationService.DeleteApplicationAsync(id);
+
+            if (!result)
+            {
+                TempData["Error"] = "Failed to delete application. The application may not exist.";
+                return RedirectToAction("Index");
+            }
+
+            TempData["Success"] = "Application deleted successfully.";
+            return RedirectToAction("Index");
         }
     }
 }
