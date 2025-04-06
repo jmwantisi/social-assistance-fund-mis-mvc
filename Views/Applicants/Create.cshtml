@@ -2,11 +2,12 @@
 
 @{
     bool isReadOnly = ViewData["IsReadOnly"] != null && (bool)ViewData["IsReadOnly"];
-    string formAction = Model.Id == 0 ? "Create" : "Edit";
+    bool isEdit = Model?.Id > 0;
+    string formAction = isEdit ? "Edit" : "Create";
 }
 
 <div class="container">
-    <h2>@(isReadOnly ? "View Applicant" : "Create Applicant")</h2>
+    <h2>@((isEdit && !isReadOnly) ? "Update" : isReadOnly ? "View" : "Create") Applicant</h2>
 
     <form asp-action="@formAction" method="post">
         <div class="mb-3">
@@ -60,7 +61,7 @@
 
         <div class="mb-3">
             <label asp-for="IdentityCardNumber" class="form-label">Identity Card Number</label>
-            <input asp-for="IdentityCardNumber" class="form-control" readonly="@(isReadOnly)" />
+            <input asp-for="IdentityCardNumber" class="form-control" maxlength="20" readonly="@(isReadOnly)" />
             <span asp-validation-for="IdentityCardNumber" class="text-danger"></span>
         </div>
 
@@ -96,6 +97,12 @@
                 </div>
             </div>
             <button type="button" class="btn btn-success mt-2" onclick="addPhoneNumber()" @(isReadOnly ? "disabled" : "")>Add Phone Number</button>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label">Email</label>
+            <input asp-for="Email" class="form-control" readonly="@(isReadOnly)" />
+            <span asp-validation-for="Email" class="text-danger"></span>
         </div>
 
         @if (!isReadOnly)
