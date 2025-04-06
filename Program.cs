@@ -26,6 +26,7 @@ builder.Services.AddScoped<PhoneNumberTypeService>();
 builder.Services.AddScoped<SexService>();
 builder.Services.AddScoped<StatusService>();
 builder.Services.AddScoped<LookupService>();
+builder.Services.AddScoped<OfficerService>();
 
 var app = builder.Build();
 
@@ -35,7 +36,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDbContext>();
     context.Database.Migrate(); // Apply pending migrations
-    GeographicLocationSeeder.SeedGeographicLocations(context);
+    DefaultSeeder.SeedGeographicLocations(context);
 }
 
 // Configure the HTTP request pipeline.
