@@ -42,11 +42,6 @@
                     <td>@applicant.PhysicalAddress</td>
                     <td>@applicant.PhoneNumbersListString</td>
                     <td>
-                        <!-- View -->
-                        <a href="@Url.Action("View", "Applicants", new { id = applicant.Id })" class="btn btn-info btn-sm" title="View">
-                            <i class="fa fa-eye"></i>
-                        </a>
-
                         <!-- Edit -->
                         <a href="@Url.Action("Edit", "Applicants", new { id = applicant.Id })" class="btn btn-warning btn-sm" title="Edit">
                             <i class="fa fa-pen"></i>
