@@ -4,7 +4,20 @@ using socialAssistanceFundMIS.Models;
 
 namespace SocialAssistanceFundMisMcv.Services
 {
-    public class LookupService
+    public interface ILookupService
+    {
+        Task<IEnumerable<AssistanceProgram>> GetProgramsAsync();
+        Task<AssistanceProgram?> GetProgramByIdAsync(int id);
+        Task<IEnumerable<Sex>> GetSexesAsync();
+        Task<Sex?> GetSexByIdAsync(int id);
+        Task<IEnumerable<MaritalStatus>> GetMaritalStatusesAsync();
+        Task<MaritalStatus?> GetMaritalStatusByIdAsync(int id);
+        Task<IEnumerable<Status>> GetStatusesAsync();
+        Task<Status?> GetStatusByIdAsync(int id);
+        Task<IEnumerable<PhoneNumberType>> GetPhoneNumberTypesAsync();
+        Task<PhoneNumberType?> GetPhoneNumberTypeByIdAsync(int id);
+    }
+    public class LookupService : ILookupService
     {
         private readonly ApplicationDbContext _context;
 
