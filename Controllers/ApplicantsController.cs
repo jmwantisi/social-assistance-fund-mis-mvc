@@ -30,6 +30,7 @@ namespace SocialAssistanceFundMisMcv.Controllers
                 .Include(a => a.Sex)
                 .Include(a => a.MaritialStatus)
                 .Include(a => a.PhoneNumbers) // Ensure phone numbers are loaded
+                .Where(a => a.Removed != true)
                 .Select(a => new ApplicantViewModel
                 {
                     Id = a.Id,
@@ -92,6 +93,7 @@ namespace SocialAssistanceFundMisMcv.Controllers
                 var applicant = new Applicant
                 {
                     FirstName = model.FirstName,
+                    MiddleName = model.MiddleName,
                     LastName = model.LastName,
                     SexId = model.SexId,
                     Dob = model.Dob,
@@ -154,18 +156,6 @@ namespace SocialAssistanceFundMisMcv.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(ApplicantViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                foreach (var state in ModelState)
-                {
-                    foreach (var error in state.Value.Errors)
-                    {
-                        Console.WriteLine($"Field: {state.Key}, Error: {error.ErrorMessage}");
-                    }
-                }
-                return View(model); // Return view with errors
-            }
-
             var applicant = await _context.Applicants
                 .Include(a => a.PhoneNumbers) // Ensure phone numbers are loaded
                 .FirstOrDefaultAsync(a => a.Id == model.Id);
@@ -174,6 +164,7 @@ namespace SocialAssistanceFundMisMcv.Controllers
 
             // Update applicant details
             applicant.FirstName = model.FirstName;
+            applicant.MiddleName = model.MiddleName;
             applicant.LastName = model.LastName;
             applicant.SexId = model.SexId;
             applicant.Dob = model.Dob;
@@ -218,6 +209,21 @@ namespace SocialAssistanceFundMisMcv.Controllers
             }
 
             await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _applicantService.DeleteApplicantAsync(id);
+
+            if (!result)
+            {
+                TempData["Error"] = "Failed to delete applicant. The applicant may not exist.";
+                return RedirectToAction("Index");
+            }
+
+            TempData["Success"] = "Applicant deleted successfully.";
             return RedirectToAction("Index");
         }
 
