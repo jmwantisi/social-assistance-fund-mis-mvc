@@ -33,9 +33,9 @@ namespace SocialAssistanceFundMisMcv.ViewModels
         public string FormattedDob => GetFormattedDob(Dob);
 
         [Required(ErrorMessage = "Date of Birth is required")]
-        public DateTime Dob { get; set; }
+        public DateOnly Dob { get; set; } = DateOnly.FromDateTime(DateTime.Today.AddYears(-18));
 
-        private string GetFormattedDob(DateTime date)
+        private string GetFormattedDob(DateOnly date)
         {
             string daySuffix = GetDaySuffix(date.Day);
             return $"{date.Day}{daySuffix}, {date.ToString("MMMM")}, {date.Year}";
@@ -74,18 +74,19 @@ namespace SocialAssistanceFundMisMcv.ViewModels
 
         public IEnumerable<Application>? Applications { get; set; }
 
-        private int CalculateAge(DateTime dob)
+        private int CalculateAge(DateOnly dob)
         {
-            var today = DateTime.Today;
-            var age = today.Year - dob.Year;
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            int age = today.Year - dob.Year;
 
             // Adjust age if birthday hasn't occurred yet this year
-            if (dob.Date > today.AddYears(-age))
+            if (today < new DateOnly(today.Year, dob.Month, dob.Day))
             {
                 age--;
             }
 
             return age;
         }
+
     }
 }
