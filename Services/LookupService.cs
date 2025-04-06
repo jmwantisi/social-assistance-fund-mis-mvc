@@ -13,29 +13,59 @@ namespace SocialAssistanceFundMisMcv.Services
             _context = context;
         }
 
+        // AssistancePrograms
         public async Task<IEnumerable<AssistanceProgram>> GetProgramsAsync()
         {
             return await _context.AssistancePrograms.ToListAsync();
         }
 
+        public async Task<AssistanceProgram?> GetProgramByIdAsync(int id)
+        {
+            return await _context.AssistancePrograms.FindAsync(id);
+        }
+
+        // Sexes
         public async Task<IEnumerable<Sex>> GetSexesAsync()
         {
             return await _context.Sexes.ToListAsync();
         }
 
+        public async Task<Sex?> GetSexByIdAsync(int id)
+        {
+            return await _context.Sexes.FindAsync(id);
+        }
+
+        // MaritalStatuses
         public async Task<IEnumerable<MaritalStatus>> GetMaritalStatusesAsync()
         {
             return await _context.MaritalStatuses.ToListAsync();
         }
 
+        public async Task<MaritalStatus?> GetMaritalStatusByIdAsync(int id)
+        {
+            return await _context.MaritalStatuses.FindAsync(id);
+        }
+
+        // Statuses
         public async Task<IEnumerable<Status>> GetStatusesAsync()
         {
             return await _context.Statuses.ToListAsync();
         }
 
+        public async Task<Status?> GetStatusByIdAsync(int id)
+        {
+            return await _context.Statuses.FindAsync(id);
+        }
+
+        // PhoneNumberTypes
         public async Task<IEnumerable<PhoneNumberType>> GetPhoneNumberTypesAsync()
         {
             return await _context.PhoneNumberTypes.ToListAsync();
+        }
+
+        public async Task<PhoneNumberType?> GetPhoneNumberTypeByIdAsync(int id)
+        {
+            return await _context.PhoneNumberTypes.FindAsync(id);
         }
     }
 }
