@@ -1,6 +1,8 @@
 ﻿using socialAssistanceFundMIS.Data;
 using socialAssistanceFundMIS.Models;
 using Microsoft.EntityFrameworkCore;
+using SocialAssistanceFundMisMcv.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace socialAssistanceFundMIS.Services
 {
@@ -8,28 +10,33 @@ namespace socialAssistanceFundMIS.Services
     {
         private readonly ApplicationDbContext _context;
 
-        public OfficialRecordService(ApplicationDbContext context)
+        private readonly OfficerService _officerService;
+
+        public OfficialRecordService(ApplicationDbContext context, OfficerService officerService)
         {
             _context = context;
+            _officerService = officerService;
         }
 
         // Create an OfficialRecord from DTO
-        public async Task<OfficialRecordDTO> CreateOfficialRecordAsync(OfficialRecordDTO dto)
+        // OfficialRecord will come in as user who logged in
+        // Authentication no a requirement for this assignement
+        public async Task<OfficialRecord> CreateOfficialRecordAsync()
         {
-            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            var officialRecord = new OfficialRecord();
+            var existingOfficer = await _officerService.GetByIdAsync(1);
+            if (existingOfficer == null)
+                throw new Exception("Officer not found");
 
-            var officialRecord = new OfficialRecord
-            {
-                OfficerId = dto.OfficerId,
-                OfficiationDate = dto.OfficiationDate,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+            officialRecord.Officer = existingOfficer;
+            officialRecord.OfficiationDate = DateTime.UtcNow;
+            officialRecord.CreatedAt = DateTime.UtcNow;
+            officialRecord.UpdatedAt = DateTime.UtcNow;
 
             _context.OfficialRecords.Add(officialRecord);
             await _context.SaveChangesAsync();
 
-            return MapToDTO(officialRecord);
+            return officialRecord;
         }
 
         // Get an OfficialRecord by ID
