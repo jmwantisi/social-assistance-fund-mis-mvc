@@ -27,6 +27,7 @@ builder.Services.AddScoped<SexService>();
 builder.Services.AddScoped<StatusService>();
 builder.Services.AddScoped<LookupService>();
 builder.Services.AddScoped<OfficerService>();
+builder.Services.AddScoped<EmailService>();
 
 var app = builder.Build();
 
