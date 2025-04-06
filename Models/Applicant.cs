@@ -17,6 +17,8 @@ namespace socialAssistanceFundMIS.Data
         [Required]
         public string? LastName { get; set; }
 
+        public string? Email { get; set; }
+
         [Required]
         public int SexId { get; set; }
         public Sex? Sex { get; set; }
