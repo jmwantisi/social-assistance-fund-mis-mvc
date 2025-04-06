@@ -17,6 +17,9 @@ namespace SocialAssistanceFundMisMcv.ViewModels
         [Required(ErrorMessage = "Last Name is required")]
         public string? LastName { get; set; }
 
+        [Required(ErrorMessage = "Email is required")]
+        public string? Email { get; set; }
+
         public string? SexName { get; set; }
 
         [Required(ErrorMessage = "Sex is required")]
@@ -58,6 +61,7 @@ namespace SocialAssistanceFundMisMcv.ViewModels
         public IEnumerable<GeographicLocation>? Villages { get; set; }
 
         [Required(ErrorMessage = "Identity Card Number is required")]
+        [MaxLength(20, ErrorMessage = "Identity Card Number cannot exceed 20 characters.")]
         public string? IdentityCardNumber { get; set; }
 
         public string? PhoneNumbersListString { get; set; }
