@@ -1,0 +1,106 @@
+﻿@model SocialAssistanceFundMisMcv.ViewModels.ReportViewModel
+
+<h2 class="my-4">Reports</h2>
+
+<div class="row text-center">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body chart-container">
+                <h5 class="card-title">Applications by Status</h5>
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body chart-container">
+                <h5 class="card-title">Approved Applicants by Gender</h5>
+                <canvas id="genderChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body chart-container">
+                <h5 class="card-title">Applications per Program</h5>
+                <canvas id="programChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .chart-container {
+        height: 400px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+        .chart-container canvas {
+            flex-grow: 1;
+        }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    const genderCtx = document.getElementById('genderChart').getContext('2d');
+    const programCtx = document.getElementById('programChart').getContext('2d');
+
+    new Chart(statusCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Pending', 'Approved'],
+            datasets: [{
+                data: @Html.Raw(Json.Serialize(Model.StatusData)),
+                backgroundColor: ['rgb(240, 142, 81, 0.5)', 'rgb(81, 240, 116, 0.5)']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    new Chart(genderCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Male', 'Female'],
+            datasets: [{
+                data: @Html.Raw(Json.Serialize(Model.GenderData)),
+                backgroundColor: ['rgb(81, 150, 240, 0.5)', 'rgb(240, 81, 208, 0.5)']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+        new Chart(programCtx, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(Json.Serialize(Model.ProgramLabels)),
+            datasets: [{
+                label: 'Applications per Program',
+                data: @Html.Raw(Json.Serialize(Model.ProgramData)),
+                backgroundColor: [
+                    'rgba(177, 180, 68, 0.5)',
+                    'rgba(208, 78, 134, 0.5)',
+                    'rgba(61, 75, 158, 0.5)',
+                    'rgba(153, 230, 191, 0.5)',
+                    'rgba(9, 198, 162, 0.5)'
+                ]
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+</script>
