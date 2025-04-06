@@ -101,7 +101,8 @@ namespace SocialAssistanceFundMisMcv.Controllers
                     IdentityCardNumber = model.IdentityCardNumber,
                     PhysicalAddress = model.PhysicalAddress,
                     PostalAddress = model.PostalAddress,
-                    VillageId = model.VillageId
+                    VillageId = model.VillageId,
+                    Email = model.Email
                 };
 
                 var phoneNumbers = model.PhoneNumbers
@@ -146,7 +147,8 @@ namespace SocialAssistanceFundMisMcv.Controllers
                     Id = pn.Id,
                     PhoneNumber = pn.PhoneNumber,
                     PhoneNumberTypeId = pn.PhoneNumberTypeId
-                }).ToList() ?? new List<ApplicantPhoneNumber>()
+                }).ToList() ?? new List<ApplicantPhoneNumber>(),
+                Email = applicant.Email
             };
 
             return View(model);
@@ -173,6 +175,7 @@ namespace SocialAssistanceFundMisMcv.Controllers
             applicant.PhysicalAddress = model.PhysicalAddress;
             applicant.PostalAddress = model.PostalAddress;
             applicant.VillageId = model.VillageId;
+            applicant.Email = model.Email;
 
             // Handle phone numbers
             var existingPhoneNumbers = applicant.PhoneNumbers.ToList();
