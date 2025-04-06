@@ -9,11 +9,15 @@ namespace socialAssistanceFundMIS.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly OfficialRecordService _officialRecordService;
+        private readonly EmailService _emailService;
+        private readonly ApplicantService _applicantService;
 
-        public ApplicationService(ApplicationDbContext context, OfficialRecordService officialRecordService)
+        public ApplicationService(ApplicationDbContext context, OfficialRecordService officialRecordService, EmailService emailService, ApplicantService applicantService)
         {
             _context = context;
             _officialRecordService = officialRecordService;
+            _emailService = emailService;
+            _applicantService = applicantService;
         }
 
         public async Task<Application> CreateApplicationAsync(Application application)
@@ -100,6 +104,14 @@ namespace socialAssistanceFundMIS.Services
             var officialRecord = await _officialRecordService.CreateOfficialRecordAsync();
 
             application.OfficialRecord = officialRecord;
+
+            if(statusId == 2)
+            {
+                var applicant = await _applicantService.GetApplicantByIdAsync(application.ApplicantId);
+                var subject = "Approval For Social Assistance";
+                var message = "Dear " + application?.Applicant?.FirstName + ", \nYour application for Social Assistance has been approved!";
+                await _emailService.SendEmailAsync(applicant?.Email, subject, message);
+            }
 
             await _context.SaveChangesAsync();
             return true;
