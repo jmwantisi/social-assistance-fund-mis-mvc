@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SocialAssistanceFundMisMcv.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class RevisedMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -210,7 +210,7 @@ namespace SocialAssistanceFundMisMcv.Migrations
                     MiddleName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SexId = table.Column<int>(type: "int", nullable: false),
-                    Dob = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Dob = table.Column<DateOnly>(type: "date", nullable: false),
                     MaritialStatusId = table.Column<int>(type: "int", nullable: false),
                     VillageId = table.Column<int>(type: "int", nullable: true),
                     IdentityCardNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -278,12 +278,12 @@ namespace SocialAssistanceFundMisMcv.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ApplicationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ApplicantId = table.Column<int>(type: "int", nullable: true),
-                    ProgramId = table.Column<int>(type: "int", nullable: true),
+                    ApplicationDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    ApplicantId = table.Column<int>(type: "int", nullable: false),
+                    ProgramId = table.Column<int>(type: "int", nullable: false),
                     StatusId = table.Column<int>(type: "int", nullable: true),
                     OfficialRecordId = table.Column<int>(type: "int", nullable: true),
-                    DeclarationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeclarationDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Removed = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -295,12 +295,14 @@ namespace SocialAssistanceFundMisMcv.Migrations
                         name: "FK_Applications_Applicants_ApplicantId",
                         column: x => x.ApplicantId,
                         principalTable: "Applicants",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Applications_AssistancePrograms_ProgramId",
                         column: x => x.ProgramId,
                         principalTable: "AssistancePrograms",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Applications_OfficialRecords_OfficialRecordId",
                         column: x => x.OfficialRecordId,

@@ -33,8 +33,8 @@ namespace SocialAssistanceFundMisMcv.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Dob")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("Dob")
+                        .HasColumnType("date");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -128,22 +128,22 @@ namespace SocialAssistanceFundMisMcv.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ApplicantId")
+                    b.Property<int>("ApplicantId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ApplicationDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("ApplicationDate")
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeclarationDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly?>("DeclarationDate")
+                        .HasColumnType("date");
 
                     b.Property<int?>("OfficialRecordId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProgramId")
+                    b.Property<int>("ProgramId")
                         .HasColumnType("int");
 
                     b.Property<bool>("Removed")
@@ -499,7 +499,9 @@ namespace SocialAssistanceFundMisMcv.Migrations
                 {
                     b.HasOne("socialAssistanceFundMIS.Data.Applicant", "Applicant")
                         .WithMany("Applications")
-                        .HasForeignKey("ApplicantId");
+                        .HasForeignKey("ApplicantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("socialAssistanceFundMIS.Models.OfficialRecord", "OfficialRecord")
                         .WithMany()
@@ -507,7 +509,9 @@ namespace SocialAssistanceFundMisMcv.Migrations
 
                     b.HasOne("socialAssistanceFundMIS.Models.AssistanceProgram", "Program")
                         .WithMany()
-                        .HasForeignKey("ProgramId");
+                        .HasForeignKey("ProgramId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("socialAssistanceFundMIS.Models.Status", "Status")
                         .WithMany()
