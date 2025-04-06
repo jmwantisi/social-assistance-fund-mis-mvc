@@ -22,7 +22,7 @@ namespace socialAssistanceFundMIS.Data
         public Sex? Sex { get; set; }
 
         [Required]
-        public DateTime Dob { get; set; }
+        public DateOnly Dob { get; set; }
 
         [Required]
         public int? MaritialStatusId { get; set; }
