@@ -5,7 +5,20 @@ using SocialAssistanceFundMisMcv.Services;
 
 namespace socialAssistanceFundMIS.Services
 {
-    public class ApplicationService
+
+    public interface IApplicationService
+    {
+        Task<Application> CreateApplicationAsync(Application application);
+        Task<Application?> GetApplicationByIdAsync(int id);
+        Task<List<Application>> GetAllApplicationsAsync();
+        Task<Application?> UpdateApplicationAsync(int id, Application updatedApplication);
+        Task<bool> ApproveApplicationAsync(int id, int statusId);
+        Task<bool> DeleteApplicationAsync(int id);
+        Task<bool> PermanentlyDeleteApplicationAsync(int id);
+    }
+
+
+    public class ApplicationService : IApplicationService
     {
         private readonly ApplicationDbContext _context;
         private readonly OfficialRecordService _officialRecordService;
