@@ -1,0 +1,144 @@
+﻿@model SocialAssistanceFundMisMcv.ViewModels.ApplicantViewModel
+
+<h2>Edit Applicant</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="FirstName" class="form-label">First Name</label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MiddleName" class="form-label">Middle Name</label>
+        <input asp-for="MiddleName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LastName" class="form-label">Last Name</label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SexId" class="form-label">Sex</label>
+        <select asp-for="SexId" asp-items="@(new SelectList(Model.Sexes, "Id", "Name"))" class="form-control">
+            <option value="">-- Select Sex --</option>
+        </select>
+        <span asp-validation-for="SexId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Dob" class="form-label">Date of Birth</label>
+        <input asp-for="Dob" type="date" class="form-control" />
+        <span asp-validation-for="Dob" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MaritalStatusId" class="form-label">Marital Status</label>
+        <select asp-for="MaritalStatusId" asp-items="@(new SelectList(Model.MaritalStatuses, "Id", "Name"))" class="form-control">
+            <option value="">-- Select Marital Status --</option>
+        </select>
+        <span asp-validation-for="MaritalStatusId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="VillageId" class="form-label">Geographical Location</label>
+        <select asp-for="VillageId" asp-items="@(new SelectList(Model.Villages, "Id", "Name"))" class="form-control">
+            <option value="">-- Select Location --</option>
+        </select>
+        <span asp-validation-for="VillageId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IdentityCardNumber" class="form-label">Identity Card Number</label>
+        <input asp-for="IdentityCardNumber" class="form-control" />
+        <span asp-validation-for="IdentityCardNumber" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PostalAddress" class="form-label">Postal Address</label>
+        <input asp-for="PostalAddress" class="form-control" />
+        <span asp-validation-for="PostalAddress" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PhysicalAddress" class="form-label">Physical Address</label>
+        <input asp-for="PhysicalAddress" class="form-control" />
+        <span asp-validation-for="PhysicalAddress" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Phone Numbers</label>
+        <div id="phoneNumbersContainer">
+            @if (Model.PhoneNumbers != null && Model.PhoneNumbers.Any())
+            {
+                var phoneNumbersList = Model.PhoneNumbers.ToList(); // Convert to List
+
+                for (int i = 0; i < phoneNumbersList.Count; i++)
+                {
+                    <div class="phone-number-entry d-flex align-items-center">
+                        <select name="PhoneNumbers[@i].PhoneNumberTypeId" class="form-control me-2">
+                            <option value="">-- Select Type --</option>
+                            @foreach (var type in Model.PhoneNumberTypes)
+                            {
+                                <option value="@type.Id" selected="@(phoneNumbersList[i].PhoneNumberTypeId == type.Id ? "selected" : null)">
+                                    @type.Name
+                                </option>
+                            }
+                        </select>
+                        <input name="PhoneNumbers[@i].PhoneNumber" class="form-control me-2" value="@phoneNumbersList[i].PhoneNumber" placeholder="Enter Phone Number" />
+                        <button type="button" class="btn btn-danger remove-phone" onclick="removePhoneNumber(this)">X</button>
+                    </div>
+                }
+            }
+        </div>
+
+        <button type="button" class="btn btn-success mt-2" onclick="addPhoneNumber()">Add Phone Number</button>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">Email</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        let phoneIndex = 1;
+        let phoneTypes = @Html.Raw(Json.Serialize(Model.PhoneNumberTypes));
+
+        function addPhoneNumber() {
+            let container = document.getElementById("phoneNumbersContainer");
+            let newField = document.createElement("div");
+            newField.classList.add("phone-number-entry", "d-flex", "align-items-center");
+
+            let options = phoneTypes.map(type => `<option value="${type.id}">${type.name}</option>`).join("");
+
+            newField.innerHTML = `
+                <select name="PhoneNumbers[${phoneIndex}].PhoneNumberTypeId" class="form-control me-2">
+                    <option value="">-- Select Type --</option>
+                    ${options}
+                </select>
+                <input name="PhoneNumbers[${phoneIndex}].PhoneNumber" class="form-control me-2" placeholder="Enter Phone Number" />
+                <button type="button" class="btn btn-danger remove-phone" onclick="removePhoneNumber(this)">X</button>
+            `;
+            container.appendChild(newField);
+            phoneIndex++;
+        }
+
+        function removePhoneNumber(button) {
+            button.parentElement.remove();
+        }
+    </script>
+
+}
