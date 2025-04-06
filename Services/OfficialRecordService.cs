@@ -6,7 +6,16 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace socialAssistanceFundMIS.Services
 {
-    public class OfficialRecordService
+    public interface IOfficialRecordService
+    {
+        Task<OfficialRecord> CreateOfficialRecordAsync();
+        Task<OfficialRecordDTO?> GetOfficialRecordByIdAsync(int id);
+        Task<List<OfficialRecordDTO>> GetAllOfficialRecordsAsync();
+        Task<OfficialRecordDTO> UpdateOfficialRecordAsync(int id, OfficialRecordDTO dto);
+        Task<bool> DeleteOfficialRecordAsync(int id);
+        Task<bool> PermanentlyDeleteOfficialRecordAsync(int id);
+    }
+    public class OfficialRecordService : IOfficialRecordService
     {
         private readonly ApplicationDbContext _context;
 
