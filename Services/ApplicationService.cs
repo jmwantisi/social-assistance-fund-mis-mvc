@@ -1,16 +1,19 @@
 ﻿using socialAssistanceFundMIS.Data;
 using socialAssistanceFundMIS.Models;
 using Microsoft.EntityFrameworkCore;
+using SocialAssistanceFundMisMcv.Services;
 
 namespace socialAssistanceFundMIS.Services
 {
     public class ApplicationService
     {
         private readonly ApplicationDbContext _context;
+        private readonly OfficialRecordService _officialRecordService;
 
-        public ApplicationService(ApplicationDbContext context)
+        public ApplicationService(ApplicationDbContext context, OfficialRecordService officialRecordService)
         {
             _context = context;
+            _officialRecordService = officialRecordService;
         }
 
         public async Task<Application> CreateApplicationAsync(Application application)
@@ -19,11 +22,11 @@ namespace socialAssistanceFundMIS.Services
                 throw new ArgumentNullException(nameof(application));
 
             // Load existing Applicant from DB
-            var existingApplicant = await _context.Applicants.FindAsync(application?.Applicant?.Id);
+            var existingApplicant = await _context.Applicants.FindAsync(application?.ApplicantId);
             if (existingApplicant == null)
                 throw new Exception("Applicant not found");
 
-            var existingProgram = await _context.AssistancePrograms.FindAsync(application?.Program?.Id);
+            var existingProgram = await _context.AssistancePrograms.FindAsync(application?.ProgramId);
             if (existingProgram == null)
                 throw new Exception("Applicant not found");
 
@@ -37,8 +40,6 @@ namespace socialAssistanceFundMIS.Services
 
             return await GetApplicationByIdAsync(application.Id);
         }
-
-
 
         public async Task<Application?> GetApplicationByIdAsync(int id)
         {
@@ -56,13 +57,16 @@ namespace socialAssistanceFundMIS.Services
                 .Include(a => a.Applicant)
                 .Include(a => a.Program)
                 .Include(a => a.Status)
-                .Include(a => a.OfficialRecord).ThenInclude(or => or.Officer)
+                .Include(a => a.OfficialRecord)
+                .ThenInclude(or => or.Officer)
+                .ThenInclude(designation => designation.Designation)
                 .Where(a => !a.Removed)
                 .ToListAsync();
         }
 
         public async Task<Application?> UpdateApplicationAsync(int id, Application updatedApplication)
         {
+
             if (updatedApplication == null)
                 throw new ArgumentNullException(nameof(updatedApplication));
 
@@ -70,12 +74,37 @@ namespace socialAssistanceFundMIS.Services
             if (existingApplication == null)
                 throw new KeyNotFoundException("Application not found.");
 
-            _context.Entry(existingApplication).CurrentValues.SetValues(updatedApplication);
+            existingApplication.ApplicationDate = updatedApplication.ApplicationDate;
+            existingApplication.DeclarationDate = updatedApplication.DeclarationDate;
+            existingApplication.ProgramId = updatedApplication.ProgramId;
+            existingApplication.ApplicantId = updatedApplication.ApplicantId;
             existingApplication.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
             return await GetApplicationByIdAsync(id);
         }
+
+        public async Task<bool> ApproveApplicationAsync(int id, int statusId)
+        {
+            // set official record here also
+            var application = await _context.Applications.FindAsync(id);
+            if (application == null)
+                throw new KeyNotFoundException("Application not found.");
+
+            var status = await _context.Statuses.FindAsync(statusId);
+            if (status == null)
+                throw new KeyNotFoundException("Status not found.");
+
+            application.Status = status; // assign the whole entity, not just the ID
+            application.UpdatedAt = DateTime.UtcNow;
+            var officialRecord = await _officialRecordService.CreateOfficialRecordAsync();
+
+            application.OfficialRecord = officialRecord;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
 
         public async Task<bool> DeleteApplicationAsync(int id)
         {
