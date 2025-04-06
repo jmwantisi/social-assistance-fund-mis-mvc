@@ -5,21 +5,35 @@
 }
 
 <div class="col-md-12">
-    <h2>Applications</h2>
+    <div style="margin-left: 1%">
+        <h2>Applications</h2>
+        <p>
+            <a href="@Url.Action("Create")" class="btn btn-primary">Create New</a>
+        </p>
+    </div>
 
-    <p>
-        <a href="@Url.Action("Create")" class="btn btn-primary">Create New</a>
-    </p>
+    <div style="margin-left: 1%">
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="minDate">Start Date</label>
+                <input type="date" id="minDate" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label for="maxDate">End Date</label>
+                <input type="date" id="maxDate" class="form-control">
+            </div>
+        </div>
+    </div>
 
-    <table class="table table-striped">
+    <table id="applicationsTable" class="table table-striped">
         <thead>
             <tr>
                 <th>Application Date</th>
                 <th>Applicant</th>
                 <th>Program</th>
                 <th>Status</th>
-                <th>Decleration Date</th>
-                <th>(Offical Details) Collected By and Date</th>
+                <th>Declaration Date</th>
+                <th>Collected By and Date</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -34,29 +48,105 @@
                         </a>
                     </td>
                     <td>@item?.Program?.Name</td>
-                    <td>@item?.Status?.Name</td>
-                    <td>@(item?.DeclarationDate != null ? item?.DeclarationDate : "---Not signed---") </td>
+                    <td>
+                        @{
+                            var statusId = item?.Status?.Id ?? 0;
+                            var statusName = item?.Status?.Name ?? "Unknown";
+                            string badgeClass = statusId switch
+                            {
+                                1 => "badge bg-warning text-dark", // Pending
+                                2 => "badge bg-success",           // Approved
+                                3 => "badge bg-danger",            // Rejected
+                                _ => "badge bg-secondary"          // Fallback
+                            };
+                        }
+                        <span class="@badgeClass">@statusName</span>
+                    </td>
+                    <td>@(item?.DeclarationDate != null ? item?.DeclarationDate : "---Not signed---")</td>
                     <td>
                         @(item?.OfficialRecord?.Officer != null
                             ? $"{item.OfficialRecord.Officer.FirstName} {item.OfficialRecord.Officer.LastName} ({item.OfficialRecord.Officer.Designation?.Name}) - {item.OfficialRecord.OfficiationDate}"
                             : "---Not signed---")
                     </td>
                     <td>
-                        <form method="post" action="@Url.Action("Approve", "Home", new { id = item?.Id, statusId = @item?.Status?.Id == 1 ? 2 : 1 })" style="display:inline;"
+                        <!-- Approve / Disapprove -->
+                        <form method="post" action="@Url.Action("Approve", "Home", new { id = item?.Id, statusId = item?.Status?.Id == 1 ? 2 : 1 })" style="display:inline;"
                               onsubmit="return confirm('Are you sure you want to @(item?.Status?.Id == 1 ? "Approve" : "Disapprove") this application?');">
-                            <button type="submit" class="btn btn-primary btn-sm">@(item.Status.Id == 1 ? "Approve" : "Disapprove")</button>
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fa-solid @(item.Status.Id == 1 ? "fa-thumbs-up" : "fa-thumbs-down")"></i>
+                            </button>
                         </form>
-                        
-                        <a href="@Url.Action("View", new { id = item?.Id })" class="btn btn-info btn-sm">View</a>
-                        <a href="@Url.Action("Edit", new { id = item?.Id })" class="btn btn-warning btn-sm">Edit</a>
+
+                        <!-- View -->
+                        <a href="@Url.Action("View", new { id = item?.Id })" class="btn btn-info btn-sm">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+
+                        <!-- Edit -->
+                        <a href="@Url.Action("Edit", new { id = item?.Id })" class="btn btn-warning btn-sm">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+
+                        <!-- Delete -->
                         <form method="post" action="@Url.Action("Delete", "Home", new { id = item?.Id })" style="display:inline;"
                               onsubmit="return confirm('Are you sure you want to delete this application?');">
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
                         </form>
                     </td>
+
                 </tr>
             }
         </tbody>
-
     </table>
+
 </div>
+
+@section Scripts 
+{
+    <script>
+        $.fn.dataTable.ext.search.push(
+            function (settings, data, dataIndex) {
+                const min = $('#minDate').val();
+                const max = $('#maxDate').val();
+                const appDate = data[0]; // assuming Application Date is the first column
+
+                if (!appDate) return false;
+
+                const appDateObj = new Date(appDate);
+                const minDate = min ? new Date(min) : null;
+                const maxDate = max ? new Date(max) : null;
+
+                if (
+                    (!minDate || appDateObj >= minDate) &&
+                    (!maxDate || appDateObj <= maxDate)
+                ) {
+                    return true;
+                }
+                return false;
+            }
+        );
+
+        $(document).ready(function () {
+            const table = $('#applicationsTable').DataTable({
+                pageLength: 10,
+                order: [[0, "desc"]],
+                language: {
+                    search: "Filter records:",
+                    lengthMenu: "Show _MENU_ applications",
+                    zeroRecords: "No applications found",
+                    info: "Showing _START_ to _END_ of _TOTAL_ applications",
+                    infoEmpty: "No applications available",
+                    infoFiltered: "(filtered from _MAX_ total applications)"
+                }
+            });
+
+            $('#minDate, #maxDate').on('change', function () {
+                table.draw();
+            });
+        });
+    </script>
+}
+
+
