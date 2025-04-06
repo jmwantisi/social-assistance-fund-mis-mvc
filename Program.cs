@@ -28,6 +28,8 @@ builder.Services.AddScoped<StatusService>();
 builder.Services.AddScoped<LookupService>();
 builder.Services.AddScoped<OfficerService>();
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<ReportService>();
+
 
 var app = builder.Build();
 
