@@ -1,13 +1,29 @@
 ﻿@model SocialAssistanceFundMisMcv.ViewModels.ApplicationViewModel
 
-<div class="container mt-4">
-    <h2>Create Application</h2>
+@{
+    bool isReadOnly = ViewData["IsReadOnly"] != null && (bool)ViewData["IsReadOnly"];
+    bool isEdit = Model?.Id > 0;
+    string formAction = isEdit ? "Edit" : "Create";
+}
 
-    <form method="post">
+<div class="container mt-4">
+    <h2>@((isEdit && !isReadOnly) ? "Update" : isReadOnly ? "View" : "Create") Application</h2>
+
+    <form asp-action="@formAction" method="post">
+
+        <input type="hidden" asp-for="Id" /> <!-- Needed for Edit mode -->
+
+        <div class="form-group">
+            <div class="mb-3">
+                <label asp-for="ApplicationDate" class="control-label"></label>
+                <input asp-for="ApplicationDate" type="date" class="form-control" readonly="@(isReadOnly)" />
+                <span asp-validation-for="ApplicationDate" class="text-danger"></span>
+            </div>
+        </div>
         <div class="form-group">
             <label asp-for="SelectedProgramId" class="control-label"></label>
             <select asp-for="SelectedProgramId" class="form-control"
-                    asp-items="@(new SelectList(Model.Programs, "Id", "Name"))">
+                    asp-items="@(new SelectList(Model.Programs, "Id", "Name"))" readonly="@(isReadOnly)">
                 <option value="">-- Select Program --</option>
             </select>
             <span asp-validation-for="SelectedProgramId" class="text-danger"></span>
@@ -16,13 +32,25 @@
         <div class="form-group">
             <label asp-for="ApplicantId" class="control-label"></label>
             <select asp-for="ApplicantId" class="form-control"
-                    asp-items="@(Model?.Applicants != null ? new SelectList(Model.Applicants, "Id", "FirstName") : new SelectList(Enumerable.Empty<object>()))">
+                    asp-items="@(Model?.Applicants != null ? new SelectList(Model.Applicants, "Id", "FirstName") : new SelectList(Enumerable.Empty<object>()))" readonly="@(isReadOnly)">
                 <option value="">-- Select Applicant --</option>
             </select>
             <span asp-validation-for="ApplicantId" class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-primary">Create</button>
+
+        <div class="form-group">
+            <div class="mb-3">
+                <label asp-for="DeclarationDate" class="control-label"></label>
+                <input asp-for="DeclarationDate" type="date" class="form-control" readonly="@(isReadOnly)" />
+                <span asp-validation-for="DeclarationDate" class="text-danger"></span>
+            </div>
+        </div>
+
+        @if (!isReadOnly)
+        {
+            <button type="submit" class="btn btn-primary">@((isEdit) ? "Save Changes" : "Create")</button>
+        }
         <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
     </form>
 </div>
