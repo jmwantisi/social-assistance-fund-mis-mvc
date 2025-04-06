@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SocialAssistanceFundMisMcv.Migrations
 {
     /// <inheritdoc />
-    public partial class RevisedMigration : Migration
+    public partial class FixMigrationParts : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -209,6 +209,7 @@ namespace SocialAssistanceFundMisMcv.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MiddleName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SexId = table.Column<int>(type: "int", nullable: false),
                     Dob = table.Column<DateOnly>(type: "date", nullable: false),
                     MaritialStatusId = table.Column<int>(type: "int", nullable: false),

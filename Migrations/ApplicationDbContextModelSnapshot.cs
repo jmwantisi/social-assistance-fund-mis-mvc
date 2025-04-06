@@ -36,6 +36,9 @@ namespace SocialAssistanceFundMisMcv.Migrations
                     b.Property<DateOnly>("Dob")
                         .HasColumnType("date");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
