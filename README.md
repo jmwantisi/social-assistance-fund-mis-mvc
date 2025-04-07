@@ -102,6 +102,11 @@ Before you begin, ensure you have the following installed on your machine:
    ```
       http://localhost:<port>
    ```
-   
+   ### Scrrenshots
+![7](https://github.com/user-attachments/assets/920768d7-0daa-4518-9602-1fecce61eaa6)
+![5](https://github.com/user-attachments/assets/75c18f13-cd8c-4b8d-8e27-352f675d87a5)
+![4](https://github.com/user-attachments/assets/31b6c8e6-9f44-40f0-bc54-263469e241d4)
+![3](https://github.com/user-attachments/assets/f9eaa8c7-b6ba-4d98-8388-5ad562276873)
+![2](https://github.com/user-attachments/assets/8f89bf39-5e3e-431f-8596-9e28b4d12253)
+![1](https://github.com/user-attachments/assets/7201ff8f-d815-4f71-b67a-b70c6b0f339e)
 
-  
