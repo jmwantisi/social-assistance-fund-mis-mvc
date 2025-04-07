@@ -72,6 +72,7 @@ namespace socialAssistanceFundMIS.Services
         {
             return await _context.Applications
                 .Include(a => a.Applicant)
+                .ThenInclude(village => village.Village)
                 .Include(a => a.Program)
                 .Include(a => a.Status)
                 .Include(a => a.OfficialRecord)
