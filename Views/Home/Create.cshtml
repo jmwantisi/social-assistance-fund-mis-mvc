@@ -7,50 +7,69 @@
 }
 
 <div class="container mt-4">
-    <h2>@((isEdit && !isReadOnly) ? "Update" : isReadOnly ? "View" : "Create") Application</h2>
-
-    <form asp-action="@formAction" method="post">
-
-        <input type="hidden" asp-for="Id" /> <!-- Needed for Edit mode -->
-
-        <div class="form-group">
-            <div class="mb-3">
-                <label asp-for="ApplicationDate" class="control-label"></label>
-                <input asp-for="ApplicationDate" type="date" class="form-control" readonly="@(isReadOnly)" />
-                <span asp-validation-for="ApplicationDate" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="SelectedProgramId" class="control-label"></label>
-            <select asp-for="SelectedProgramId" class="form-control"
-                    asp-items="@(new SelectList(Model.Programs, "Id", "Name"))" readonly="@(isReadOnly)">
-                <option value="">-- Select Program --</option>
-            </select>
-            <span asp-validation-for="SelectedProgramId" class="text-danger"></span>
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                @((isEdit && !isReadOnly) ? "Update" : isReadOnly ? "View" : "Create") Application
+            </h4>
         </div>
 
-        <div class="form-group">
-            <label asp-for="ApplicantId" class="control-label"></label>
-            <select asp-for="ApplicantId" class="form-control"
-                    asp-items="@(Model?.Applicants != null ? new SelectList(Model.Applicants, "Id", "FirstName") : new SelectList(Enumerable.Empty<object>()))" readonly="@(isReadOnly)">
-                <option value="">-- Select Applicant --</option>
-            </select>
-            <span asp-validation-for="ApplicantId" class="text-danger"></span>
+        <div class="card-body">
+            <form asp-action="@formAction" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="ApplicationDate" class="form-label fw-semibold">Application Date</label>
+                        <input asp-for="ApplicationDate" type="date" class="form-control" readonly="@(isReadOnly)" />
+                        <span asp-validation-for="ApplicationDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="DeclarationDate" class="form-label fw-semibold">Declaration Date</label>
+                        <input asp-for="DeclarationDate" type="date" class="form-control" readonly="@(isReadOnly)" />
+                        <span asp-validation-for="DeclarationDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="SelectedProgramId" class="form-label fw-semibold">Program</label>
+                        <select asp-for="SelectedProgramId"
+                                asp-items="@(new SelectList(Model.Programs, "Id", "Name"))"
+                                class="form-select"
+                                disabled="@(isReadOnly)">
+                            <option value="">-- Select Program --</option>
+                        </select>
+                        <span asp-validation-for="SelectedProgramId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="ApplicantId" class="form-label fw-semibold">Applicant</label>
+                        <select asp-for="ApplicantId"
+                                asp-items="@(Model?.Applicants != null ? new SelectList(Model.Applicants, "Id", "FirstName") : new SelectList(Enumerable.Empty<object>()))"
+                                class="form-select"
+                                disabled="@(isReadOnly)">
+                            <option value="">-- Select Applicant --</option>
+                        </select>
+                        <span asp-validation-for="ApplicantId" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-end gap-2">
+                    @if (!isReadOnly)
+                    {
+                        <button type="submit" class="btn btn-primary px-4">
+                            @((isEdit) ? "Save Changes" : "Create")
+                        </button>
+                    }
+                    <a href="@Url.Action("Index")" class="btn btn-secondary px-4">Back to List</a>
+                </div>
+            </form>
         </div>
-
-
-        <div class="form-group">
-            <div class="mb-3">
-                <label asp-for="DeclarationDate" class="control-label"></label>
-                <input asp-for="DeclarationDate" type="date" class="form-control" readonly="@(isReadOnly)" />
-                <span asp-validation-for="DeclarationDate" class="text-danger"></span>
-            </div>
-        </div>
-
-        @if (!isReadOnly)
-        {
-            <button type="submit" class="btn btn-primary">@((isEdit) ? "Save Changes" : "Create")</button>
-        }
-        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
-    </form>
+    </div>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
