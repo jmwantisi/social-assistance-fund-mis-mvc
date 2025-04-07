@@ -1,31 +1,41 @@
 ﻿@model SocialAssistanceFundMisMcv.ViewModels.ReportViewModel
 
-<h2 class="my-4">Reports</h2>
-
-<div class="row text-center">
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body chart-container">
-                <h5 class="card-title">Applications by Status</h5>
-                <canvas id="statusChart"></canvas>
-            </div>
-        </div>
+<div class="container mt-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h2 class="mb-0 fw-bold">📊 Reports Dashboard</h2>
     </div>
 
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body chart-container">
-                <h5 class="card-title">Approved Applicants by Gender</h5>
-                <canvas id="genderChart"></canvas>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-info text-white fw-semibold">
+                    Applications by Status
+                </div>
+                <div class="card-body chart-container">
+                    <canvas id="statusChart"></canvas>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body chart-container">
-                <h5 class="card-title">Applications per Program</h5>
-                <canvas id="programChart"></canvas>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-success text-white fw-semibold">
+                    Approved Applicants by Gender
+                </div>
+                <div class="card-body chart-container">
+                    <canvas id="genderChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-warning text-dark fw-semibold">
+                    Applications per Program
+                </div>
+                <div class="card-body chart-container">
+                    <canvas id="programChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -33,15 +43,23 @@
 
 <style>
     .chart-container {
-        height: 400px;
+        height: 350px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: center;
     }
 
         .chart-container canvas {
             flex-grow: 1;
         }
+
+    .card-header {
+        font-size: 1rem;
+    }
+
+    h2 {
+        font-size: 1.75rem;
+    }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -56,31 +74,41 @@
             labels: ['Pending', 'Approved'],
             datasets: [{
                 data: @Html.Raw(Json.Serialize(Model.StatusData)),
-                backgroundColor: ['rgb(240, 142, 81, 0.5)', 'rgb(81, 240, 116, 0.5)']
+                backgroundColor: ['rgba(240, 142, 81, 0.7)', 'rgba(81, 240, 116, 0.7)']
             }]
         },
         options: {
             responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
             maintainAspectRatio: false
         }
     });
 
     new Chart(genderCtx, {
-        type: 'pie',
+        type: 'doughnut',
         data: {
             labels: ['Male', 'Female'],
             datasets: [{
                 data: @Html.Raw(Json.Serialize(Model.GenderData)),
-                backgroundColor: ['rgb(81, 150, 240, 0.5)', 'rgb(240, 81, 208, 0.5)']
+                backgroundColor: ['rgba(81, 150, 240, 0.7)', 'rgba(240, 81, 208, 0.7)']
             }]
         },
         options: {
             responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
             maintainAspectRatio: false
         }
     });
 
-        new Chart(programCtx, {
+    new Chart(programCtx, {
         type: 'bar',
         data: {
             labels: @Html.Raw(Json.Serialize(Model.ProgramLabels)),
@@ -88,19 +116,24 @@
                 label: 'Applications per Program',
                 data: @Html.Raw(Json.Serialize(Model.ProgramData)),
                 backgroundColor: [
-                    'rgba(177, 180, 68, 0.5)',
-                    'rgba(208, 78, 134, 0.5)',
-                    'rgba(61, 75, 158, 0.5)',
-                    'rgba(153, 230, 191, 0.5)',
-                    'rgba(9, 198, 162, 0.5)'
-                ]
+                    'rgba(177, 180, 68, 0.6)',
+                    'rgba(208, 78, 134, 0.6)',
+                    'rgba(61, 75, 158, 0.6)',
+                    'rgba(153, 230, 191, 0.6)',
+                    'rgba(9, 198, 162, 0.6)'
+                ],
+                borderRadius: 6
             }]
         },
         options: {
             indexAxis: 'y',
             responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
             maintainAspectRatio: false
         }
     });
-
 </script>
