@@ -4,113 +4,113 @@
     ViewData["Title"] = "Applications List";
 }
 
-<div class="col-md-12">
-    <div style="margin-left: 1%">
-        <h2>Applications</h2>
-        <p>
-            <a href="@Url.Action("Create")" class="btn btn-primary">Create New</a>
-        </p>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">
+            <i class="fa-solid fa-file-lines me-2 text-primary"></i> Applications
+        </h2>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="fa fa-plus me-1"></i> Create New
+        </a>
     </div>
 
-    <div style="margin-left: 1%">
-        <div class="row mb-3">
-            <div class="col-md-3">
-                <label for="minDate">Start Date</label>
-                <input type="date" id="minDate" class="form-control">
-            </div>
-            <div class="col-md-3">
-                <label for="maxDate">End Date</label>
-                <input type="date" id="maxDate" class="form-control">
-            </div>
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label for="minDate" class="form-label">Start Date</label>
+            <input type="date" id="minDate" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="maxDate" class="form-label">End Date</label>
+            <input type="date" id="maxDate" class="form-control">
         </div>
     </div>
 
-    <table id="applicationsTable" class="table table-striped">
-        <thead>
-            <tr>
-                <th>Application Date</th>
-                <th>Applicant</th>
-                <th>Program</th>
-                <th>Status</th>
-                <th>Declaration Date</th>
-                <th>Collected By and Date</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item?.ApplicationDate</td>
-                    <td>
-                        <a href="@Url.Action("Edit", "Applicants", new { id = item?.Applicant?.Id })">
-                            @item?.Applicant?.FirstName @item?.Applicant?.LastName
-                        </a>
-                    </td>
-                    <td>@item?.Program?.Name</td>
-                    <td>
-                        @{
-                            var statusId = item?.Status?.Id ?? 0;
-                            var statusName = item?.Status?.Name ?? "Unknown";
-                            string badgeClass = statusId switch
-                            {
-                                1 => "badge bg-warning text-dark", // Pending
-                                2 => "badge bg-success",           // Approved
-                                3 => "badge bg-danger",            // Rejected
-                                _ => "badge bg-secondary"          // Fallback
-                            };
-                        }
-                        <span class="@badgeClass">@statusName</span>
-                    </td>
-                    <td>@(item?.DeclarationDate != null ? item?.DeclarationDate : "---Not signed---")</td>
-                    <td>
-                        @(item?.OfficialRecord?.Officer != null
-                            ? $"{item.OfficialRecord.Officer.FirstName} {item.OfficialRecord.Officer.LastName} ({item.OfficialRecord.Officer.Designation?.Name}) - {item.OfficialRecord.OfficiationDate}"
-                            : "---Not signed---")
-                    </td>
-                    <td>
-                        <!-- Approve / Disapprove -->
-                        <form method="post" action="@Url.Action("Approve", "Home", new { id = item?.Id, statusId = item?.Status?.Id == 1 ? 2 : 1 })" style="display:inline;"
-                              onsubmit="return confirm('Are you sure you want to @(item?.Status?.Id == 1 ? "Approve" : "Disapprove") this application?');">
-                            <button type="submit" class="btn btn-primary btn-sm">
-                                <i class="fa-solid @(item.Status.Id == 1 ? "fa-thumbs-up" : "fa-thumbs-down")"></i>
-                            </button>
-                        </form>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table id="applicationsTable" class="table table-hover table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Application Date</th>
+                        <th>Applicant</th>
+                        <th>Program</th>
+                        <th>Status</th>
+                        <th>Declaration Date</th>
+                        <th>Collected By and Date</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item?.ApplicationDate.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                <a href="@Url.Action("Edit", "Applicants", new { id = item?.Applicant?.Id })">
+                                    @item?.Applicant?.FirstName @item?.Applicant?.LastName
+                                </a>
+                            </td>
+                            <td>@item?.Program?.Name</td>
+                            <td>
+                                @{
+                                    var statusId = item?.Status?.Id ?? 0;
+                                    var statusName = item?.Status?.Name ?? "Unknown";
+                                    string badgeClass = statusId switch
+                                    {
+                                        1 => "badge bg-warning text-dark",
+                                        2 => "badge bg-success",
+                                        3 => "badge bg-danger",
+                                        _ => "badge bg-secondary"
+                                    };
+                                }
+                                <span class="@badgeClass">@statusName</span>
+                            </td>
+                            <td>@(item?.DeclarationDate?.ToString("yyyy-MM-dd") ?? "---Not signed---")</td>
+                            <td>
+                                @(item?.OfficialRecord?.Officer != null
+                                    ? $"{item.OfficialRecord.Officer.FirstName} {item.OfficialRecord.Officer.LastName} ({item.OfficialRecord.Officer.Designation?.Name}) - {item.OfficialRecord.OfficiationDate.ToString("yyyy-MM-dd")}"
+                                    : "---Not signed---")
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <form method="post" action="@Url.Action("Approve", "Home", new { id = item?.Id, statusId = item?.Status?.Id == 1 ? 2 : 1 })" style="display:inline;"
+                                          onsubmit="return confirm('Are you sure you want to @(item?.Status?.Id == 1 ? "Approve" : "Disapprove") this application?');">
+                                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                                            <i class="fa-solid @(item.Status.Id == 1 ? "fa-thumbs-up" : "fa-thumbs-down")"></i>
+                                        </button>
+                                    </form>
 
-                        <!-- View -->
-                        <a href="@Url.Action("View", new { id = item?.Id })" class="btn btn-info btn-sm">
-                            <i class="fa-solid fa-eye"></i>
-                        </a>
+                                    <a href="@Url.Action("View", new { id = item?.Id })" class="btn btn-outline-info btn-sm">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
 
-                        <!-- Edit -->
-                        <a href="@Url.Action("Edit", new { id = item?.Id })" class="btn btn-warning btn-sm">
-                            <i class="fa-solid fa-pen"></i>
-                        </a>
+                                    <a href="@Url.Action("Edit", new { id = item?.Id })" class="btn btn-outline-warning btn-sm">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
 
-                        <!-- Delete -->
-                        <form method="post" action="@Url.Action("Delete", "Home", new { id = item?.Id })" style="display:inline;"
-                              onsubmit="return confirm('Are you sure you want to delete this application?');">
-                            <button type="submit" class="btn btn-danger btn-sm">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </form>
-                    </td>
-
-                </tr>
-            }
-        </tbody>
-    </table>
-
+                                    <form method="post" action="@Url.Action("Delete", "Home", new { id = item?.Id })" style="display:inline;"
+                                          onsubmit="return confirm('Are you sure you want to delete this application?');">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-@section Scripts 
+@section Scripts
 {
     <script>
         $.fn.dataTable.ext.search.push(
             function (settings, data, dataIndex) {
                 const min = $('#minDate').val();
                 const max = $('#maxDate').val();
-                const appDate = data[0]; // assuming Application Date is the first column
+                const appDate = data[0];
 
                 if (!appDate) return false;
 
@@ -118,13 +118,7 @@
                 const minDate = min ? new Date(min) : null;
                 const maxDate = max ? new Date(max) : null;
 
-                if (
-                    (!minDate || appDateObj >= minDate) &&
-                    (!maxDate || appDateObj <= maxDate)
-                ) {
-                    return true;
-                }
-                return false;
+                return (!minDate || appDateObj >= minDate) && (!maxDate || appDateObj <= maxDate);
             }
         );
 
@@ -148,5 +142,3 @@
         });
     </script>
 }
-
-
