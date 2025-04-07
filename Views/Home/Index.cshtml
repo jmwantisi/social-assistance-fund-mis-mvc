@@ -45,9 +45,10 @@
                         <tr>
                             <td>@item?.ApplicationDate.ToString("yyyy-MM-dd")</td>
                             <td>
+                                <i class="fa fa-user text-secondary me-1"></i>
                                 <a href="@Url.Action("Edit", "Applicants", new { id = item?.Applicant?.Id })">
                                     @item?.Applicant?.FirstName @item?.Applicant?.LastName
-                                </a>
+                                </a> in @item?.Applicant?.Village?.Name
                             </td>
                             <td>@item?.Program?.Name</td>
                             <td>
@@ -66,6 +67,7 @@
                             </td>
                             <td>@(item?.DeclarationDate?.ToString("yyyy-MM-dd") ?? "---Not signed---")</td>
                             <td>
+                                <i class="fa fa-user text-secondary me-1"></i>
                                 @(item?.OfficialRecord?.Officer != null
                                     ? $"{item.OfficialRecord.Officer.FirstName} {item.OfficialRecord.Officer.LastName} ({item.OfficialRecord.Officer.Designation?.Name}) - {item.OfficialRecord.OfficiationDate.ToString("yyyy-MM-dd")}"
                                     : "---Not signed---")
