@@ -104,7 +104,6 @@ Before you begin, ensure you have the following installed on your machine:
    ```
 
    ### Scrrenshots
-![6](https://github.com/user-attachments/assets/7598413b-c18f-4e83-a945-40af4de36bc5)
 ![5](https://github.com/user-attachments/assets/75c18f13-cd8c-4b8d-8e27-352f675d87a5)
 ![4](https://github.com/user-attachments/assets/31b6c8e6-9f44-40f0-bc54-263469e241d4)
 ![3](https://github.com/user-attachments/assets/f9eaa8c7-b6ba-4d98-8388-5ad562276873)
