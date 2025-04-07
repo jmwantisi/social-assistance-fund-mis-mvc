@@ -13,15 +13,17 @@ namespace SocialAssistanceFundMisMcv.Controllers
         private readonly ApplicationService _applicationService;
         private readonly LookupService _lookupService; // Service for fetching lookups
         private readonly ApplicantService _applicantService;
+        private readonly GeographicLocationService _geographicLocationService;
         private readonly ApplicationDbContext _context;
 
 
-        public HomeController(ApplicationService applicationService, LookupService lookupService, ApplicantService applicantService, ApplicationDbContext context)
+        public HomeController(ApplicationService applicationService, LookupService lookupService, ApplicantService applicantService, ApplicationDbContext context, GeographicLocationService geographicLocationService)
         {
             _applicationService = applicationService;
             _lookupService = lookupService;
             _applicantService = applicantService;
             _context = context;
+            _geographicLocationService = geographicLocationService;
         }
 
         // GET: Application
