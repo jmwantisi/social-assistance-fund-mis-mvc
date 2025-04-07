@@ -76,6 +76,12 @@
                     </div>
 
                     <div class="col-md-6">
+                        <label asp-for="Email" class="form-label fw-semibold">Email</label>
+                        <input asp-for="Email" class="form-control" readonly="@(isReadOnly)" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
                         <label asp-for="PostalAddress" class="form-label fw-semibold">Postal Address</label>
                         <input asp-for="PostalAddress" class="form-control" readonly="@(isReadOnly)" />
                         <span asp-validation-for="PostalAddress" class="text-danger small"></span>
