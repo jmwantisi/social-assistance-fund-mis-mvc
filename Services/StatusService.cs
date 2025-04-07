@@ -3,7 +3,7 @@ using socialAssistanceFundMIS.Models;
 using socialAssistanceFundMIS.DTOs;
 using Microsoft.EntityFrameworkCore;
 
-namespace socialAssistanceFundMIS.Services
+namespace SocialAssistanceFundMisMcv.Services
 {
     public interface IStatusService
     {
