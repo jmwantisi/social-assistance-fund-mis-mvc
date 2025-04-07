@@ -10,15 +10,16 @@
     <link rel="stylesheet" href="~/SocialAssistanceFundMisMcv.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-primary navbar-dark border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-dark shadow-sm">
             <div class="container-fluid">
                 <!-- Left-side Logo -->
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="~/images/left-logo.png" alt="Left Logo" height="60">
-                    Social Assistance Fund
+                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/left-logo.png" alt="Left Logo" height="50" class="me-2">
+                    <span class="font-weight-bold text-dark">Social Assistance Fund</span>
                 </a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -29,20 +30,20 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Applications</a>
+                            <a class="nav-link text-dark hover-bg-light p-2 rounded" asp-area="" asp-controller="Home" asp-action="Index">Applications</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Applicants" asp-action="Index">Applicants</a>
+                            <a class="nav-link text-dark hover-bg-light p-2 rounded" asp-area="" asp-controller="Applicants" asp-action="Index">Applicants</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Reports" asp-action="Index">Reports</a>
+                            <a class="nav-link text-dark hover-bg-light p-2 rounded" asp-area="" asp-controller="Reports" asp-action="Index">Reports</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
-
     </header>
+
     <div>
         <main role="main" class="pb-3">
             @RenderBody()
@@ -62,3 +63,28 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<style>
+    /* Lighter navbar background */
+    .navbar-light {
+        background-color: rgb(120, 170, 200, 0.5) !important;
+    }
+
+    /* Lighter hover effect on nav links */
+    .navbar-nav .nav-link {
+        color: #495057 !important; /* Dark grey color */
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+        .navbar-nav .nav-link:hover {
+            background-color: #e2e6ea; /* Light grey hover background */
+            color: #007bff; /* Blue text color on hover */
+        }
+
+        /* Active link styling */
+        .navbar-nav .nav-link.active {
+            background-color: #007bff !important; /* Blue background for active links */
+            color: white !important;
+        }
+
+</style>
