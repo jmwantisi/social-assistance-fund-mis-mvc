@@ -3,7 +3,7 @@
 ## Project Overview
 Ministry of Labour and Social Protection (MoGLSD) is in the process of establishing a Social Assistance Fund. The Social Protection Fund will consolidate monetary resources from state and non-state actors with the aim of disbursing it to the needy and vulnerable persons on a timely and predictable manner. The applicants will be identified on demand basis and assessed based on determination of their vulnerability and income status. An applicant can apply for one or more social assistance programmes. Once eligibility has been determined, then the applicants will be informed by email or through SMS alerts.
 
-This an improvement from previous work: 
+This an alten build from previous work: 
   - [Java + SpringBoot API](https://github.com/jmwantisi/SocialAssistanceFundApiV1)
   - [Vue3JS Client](https://github.com/jmwantisi/socialAssistanceFundWebApp)
 
