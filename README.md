@@ -10,6 +10,8 @@ On a side note: This an alternative build (this includes improvements in workflo
 
 This project is a .NET Core application for managing the Social Assistance Fund. It includes various features like managing applications, applicants, and sending notifications via email.
 
+> 🆕 **This build uses Blazor Server** for the frontend interface, offering a more seamless and integrated experience within the .NET ecosystem. Compared to the previous Vue 3 SPA, Blazor allows for full-stack development using C#, real-time interactivity, and simplified deployment with fewer moving parts. It also improves performance for internal environments where low-latency interactivity is critical.
+
 ## Table of Contents
 1. [Prerequisites](#prerequisites)
 2. [Configuration Steps](#configuration-steps)
